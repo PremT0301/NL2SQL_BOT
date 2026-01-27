@@ -50,3 +50,4 @@ D:\EDU\NL2SQL_BOT\backend\InventoryChatbot.Api\obj\Debug\net10.0\refint\Inventor
 D:\EDU\NL2SQL_BOT\backend\InventoryChatbot.Api\obj\Debug\net10.0\InventoryChatbot.Api.pdb
 D:\EDU\NL2SQL_BOT\backend\InventoryChatbot.Api\obj\Debug\net10.0\InventoryChatbot.Api.genruntimeconfig.cache
 D:\EDU\NL2SQL_BOT\backend\InventoryChatbot.Api\obj\Debug\net10.0\ref\InventoryChatbot.Api.dll
+D:\EDU\NL2SQL_BOT\backend\InventoryChatbot.Api\obj\Debug\net10.0\InventoryChatbot.Api.sourcelink.json

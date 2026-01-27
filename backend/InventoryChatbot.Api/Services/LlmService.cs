@@ -17,6 +17,10 @@ public class LlmService
         _model = configuration["LlmSettings:Model"] ?? "gpt-4o";
 
         var baseUrl = configuration["LlmSettings:BaseUrl"] ?? "https://api.openai.com/v1";
+        if (!baseUrl.EndsWith("/"))
+        {
+            baseUrl += "/";
+        }
         _httpClient.BaseAddress = new Uri(baseUrl);
     }
 
@@ -56,13 +60,21 @@ Output STRICT JSON only:
                 new { role = "system", content = systemPrompt },
                 new { role = "user", content = userMessage }
             },
-            temperature = 0
+            temperature = 0,
+            max_tokens = 500 // Limit token usage to prevent huge credit hold
         };
 
         var jsonContent = JsonConvert.SerializeObject(requestBody);
         var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
 
         _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _apiKey);
+
+        // OpenRouter recommended headers
+        if (_httpClient.BaseAddress?.Host.Contains("openrouter.ai") == true)
+        {
+            _httpClient.DefaultRequestHeaders.Add("HTTP-Referer", "http://localhost:5000"); // Site URL
+            _httpClient.DefaultRequestHeaders.Add("X-Title", "Inventory Chatbot"); // App Name
+        }
 
         var response = await _httpClient.PostAsync("chat/completions", content); // Assumes BaseUrl ends with /v1/ or similar, but standard usage involves /v1/chat/completions. 
                                                                                  // Adjustment: if BaseUrl is https://api.openai.com/v1, then appending "chat/completions" works.

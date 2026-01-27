@@ -9,7 +9,7 @@ export interface ApiResponse {
 }
 
 // Ensure this matches your .NET Web API URL
-const API_BASE_URL = 'http://localhost:5000/api';
+const API_BASE_URL = 'http://localhost:5085/api';
 
 export const sendMessage = async (message: string): Promise<ApiResponse> => {
     try {
