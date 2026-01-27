@@ -1,5 +1,6 @@
 using InventoryChatbot.Api.Data;
 using InventoryChatbot.Api.Services;
+using InventoryChatbot.Api.Middleware;
 using DotNetEnv;
 
 DotNetEnv.Env.Load();
@@ -23,6 +24,7 @@ builder.Services.AddHttpClient<LlmService>();
 builder.Services.AddScoped<SqlGuardService>();
 builder.Services.AddScoped<InventoryRepository>();
 builder.Services.AddScoped<QueryProcessorService>();
+builder.Services.AddSingleton<MetricsService>();
 
 // CORS Setup (Allow All for Dev, restrict in Prod)
 builder.Services.AddCors(options =>
@@ -45,6 +47,7 @@ if (app.Environment.IsDevelopment())
     // app.UseSwaggerUI();
 }
 
+app.UseMiddleware<RequestLoggingMiddleware>();
 app.UseHttpsRedirection(); // Optional, often disabled in dev tunnels but good for prod
 app.UseCors("AllowReactApp");
 app.UseAuthorization();
