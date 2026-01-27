@@ -1,6 +1,6 @@
 export interface User {
     id: number;
-    username: string; // or email
+    email: string;
     role: 'ADMIN' | 'USER';
 }
 
@@ -28,4 +28,10 @@ export interface ChatMessage {
     emotion?: 'neutral' | 'happy' | 'frustrated' | 'urgent';
     data?: any[];
     timestamp: Date;
+}
+
+export interface DashboardStats {
+    totalQueries: number;
+    guardrailRejections: number;
+    activeUsers: number;
 }

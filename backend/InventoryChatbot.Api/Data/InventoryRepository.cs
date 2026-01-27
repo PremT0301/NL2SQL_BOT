@@ -61,4 +61,23 @@ public class InventoryRepository
         var result = await connection.ExecuteScalarAsync<int>("SELECT 1");
         return result == 1;
     }
+
+    public async Task LogQueryAsync(QueryLog log)
+    {
+        using var connection = CreateConnection();
+        var sql = "INSERT INTO QueryLogs (QueryText, Intent, IsRejected, RejectionReason, Timestamp) VALUES (@QueryText, @Intent, @IsRejected, @RejectionReason, @Timestamp)";
+        await connection.ExecuteAsync(sql, log);
+    }
+
+    public async Task<(int TotalQueries, int GuardrailRejections, int ActiveUsers)> GetDashboardStatsAsync()
+    {
+        using var connection = CreateConnection();
+        var sql = @"
+            SELECT
+                (SELECT COUNT(*) FROM QueryLogs) as TotalQueries,
+                (SELECT COUNT(*) FROM QueryLogs WHERE IsRejected = 1) as GuardrailRejections,
+                (SELECT COUNT(*) FROM Users) as ActiveUsers;
+        ";
+        return await connection.QuerySingleAsync<(int, int, int)>(sql);
+    }
 }

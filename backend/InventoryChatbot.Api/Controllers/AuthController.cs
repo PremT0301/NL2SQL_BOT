@@ -34,7 +34,13 @@ namespace InventoryChatbot.Api.Controllers
             try
             {
                 var user = await _authService.RegisterAsync(request);
-                return CreatedAtAction(nameof(Login), new { email = user?.Email }, user);
+                return CreatedAtAction(nameof(Login), new { email = user?.Email }, new
+                {
+                    user?.Id,
+                    user?.Email,
+                    user?.Role,
+                    user?.CreatedAt
+                });
             }
             catch (InvalidOperationException ex)
             {

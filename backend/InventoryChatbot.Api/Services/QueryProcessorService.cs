@@ -80,6 +80,16 @@ public class QueryProcessorService
         {
             _metrics.Increment("guardrail_rejections");
             _logger.LogWarning("SQL Guard blocked unsafe query. Reason: {Reason}", ex.Message);
+
+            await _repository.LogQueryAsync(new QueryLog
+            {
+                QueryText = userMessage,
+                Intent = llmResult.Intent,
+                IsRejected = true,
+                RejectionReason = ex.Message,
+                Timestamp = DateTime.UtcNow
+            });
+
             return new QueryResponse
             {
                 Reply = "I cannot execute that request safely. " + ex.Message,
@@ -114,6 +124,16 @@ public class QueryProcessorService
         }
 
         // 5. Build Final Response
+        var queryLog = new QueryLog
+        {
+            QueryText = userMessage,
+            Intent = llmResult.Intent,
+            IsRejected = false,
+            RejectionReason = null,
+            Timestamp = DateTime.UtcNow
+        };
+        await _repository.LogQueryAsync(queryLog);
+
         return new QueryResponse
         {
             Reply = llmResult.Reply,

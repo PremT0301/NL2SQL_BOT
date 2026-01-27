@@ -7,7 +7,7 @@ namespace InventoryChatbot.Api.Models
         public int Id { get; set; }
         public required string Email { get; set; }
         [JsonIgnore]
-        public required string PasswordHash { get; set; }
+        public string PasswordHash { get; set; } = string.Empty;
         public required string Role { get; set; } // "ADMIN" or "USER"
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }

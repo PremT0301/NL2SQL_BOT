@@ -68,7 +68,6 @@ export const UserManagement: React.FC = () => {
                 <Table>
                     <TableHead>
                         <TableRow>
-                            <TableCell>ID</TableCell>
                             <TableCell>Username/Email</TableCell>
                             <TableCell>Role</TableCell>
                             <TableCell>Actions</TableCell>
@@ -77,8 +76,7 @@ export const UserManagement: React.FC = () => {
                     <TableBody>
                         {users.map((user) => (
                             <TableRow key={user.id}>
-                                <TableCell>{user.id}</TableCell>
-                                <TableCell>{user.username}</TableCell>
+                                <TableCell>{user.email}</TableCell>
                                 <TableCell>{user.role}</TableCell>
                                 <TableCell>
                                     <Button color="error" onClick={() => handleDeleteUser(user.id)}>Delete</Button>

@@ -47,6 +47,15 @@ INSERT INTO Products (Name, Category, StockQty, Price) VALUES
 ('Bluetooth Speaker', 'Electronics', 25, 79.99),
 ('Portable SSD 1TB', 'Electronics', 9, 110.00);
 
+CREATE TABLE IF NOT EXISTS QueryLogs (
+    Id INT PRIMARY KEY AUTO_INCREMENT,
+    QueryText TEXT NOT NULL,
+    Intent VARCHAR(50) NOT NULL,
+    IsRejected BOOLEAN DEFAULT FALSE,
+    RejectionReason TEXT,
+    Timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
 INSERT INTO Orders (ProductId, Quantity, OrderDate) VALUES
 (1, 1, '2023-10-01'),
 (2, 5, '2023-10-02'),

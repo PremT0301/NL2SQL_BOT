@@ -23,6 +23,15 @@ namespace InventoryChatbot.Api.Data
                     PasswordHash VARCHAR(255) NOT NULL,
                     Role VARCHAR(50) NOT NULL,
                     CreatedAt DATETIME DEFAULT CURRENT_TIMESTAMP
+                );
+
+                CREATE TABLE IF NOT EXISTS QueryLogs (
+                    Id INT AUTO_INCREMENT PRIMARY KEY,
+                    QueryText TEXT NOT NULL,
+                    Intent VARCHAR(50) NOT NULL,
+                    IsRejected BOOLEAN DEFAULT FALSE,
+                    RejectionReason TEXT,
+                    Timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
                 );";
 
             await _repository.ExecuteSafeQueryAsync(createTableSql);
