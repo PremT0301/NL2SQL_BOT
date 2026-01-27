@@ -41,5 +41,22 @@ namespace InventoryChatbot.Api.Controllers
                 return BadRequest(new { error = ex.Message });
             }
         }
+
+        [HttpGet("users")]
+        [Authorize(Roles = "ADMIN")]
+        public async Task<IActionResult> GetUsers()
+        {
+            var users = await _authService.GetAllUsersAsync();
+            return Ok(users);
+        }
+
+        [HttpDelete("users/{id}")]
+        [Authorize(Roles = "ADMIN")]
+        public async Task<IActionResult> DeleteUser(int id)
+        {
+            var success = await _authService.DeleteUserAsync(id);
+            if (!success) return NotFound();
+            return NoContent();
+        }
     }
 }

@@ -54,8 +54,12 @@ public class QueryProcessorService
             };
         }
 
-        // 2. If no SQL generated (conversational), return immediately
-        if (string.IsNullOrWhiteSpace(llmResult.Sql) || llmResult.Sql.Trim() == "SELECT ..." || llmResult.Sql.Trim() == "SELECT")
+        // 2. If no SQL generated (conversational) or GREETING, return immediately
+        if (string.IsNullOrWhiteSpace(llmResult.Sql)
+            || llmResult.Sql.Trim().ToUpper() == "NO_SQL"
+            || llmResult.Intent == "GREETING"
+            || llmResult.Sql.Trim() == "SELECT ..."
+            || llmResult.Sql.Trim() == "SELECT")
         {
             return new QueryResponse
             {

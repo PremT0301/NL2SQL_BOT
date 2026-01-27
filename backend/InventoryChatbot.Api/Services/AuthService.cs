@@ -23,29 +23,58 @@ namespace InventoryChatbot.Api.Services
 
         public async Task<ModelUser?> RegisterAsync(RegisterRequest request)
         {
+            var normalizedEmail = request.Email.Trim();
+            Console.WriteLine($"DEBUG: Registering user '{normalizedEmail}' with Role '{request.Role}'");
+
             // Check if user exists
-            var existingUser = await _repository.GetUserByEmailAsync(request.Email);
+            var existingUser = await _repository.GetUserByEmailAsync(normalizedEmail);
             if (existingUser != null)
             {
+                Console.WriteLine($"DEBUG: User '{normalizedEmail}' already exists.");
                 throw new InvalidOperationException("User already exists.");
             }
 
             var passwordHash = BCrypt.Net.BCrypt.HashPassword(request.Password);
             var user = new ModelUser
             {
-                Email = request.Email,
+                Email = normalizedEmail,
                 PasswordHash = passwordHash,
                 Role = request.Role.ToUpper()
             };
 
-            await _repository.CreateUserAsync(user);
-            return await _repository.GetUserByEmailAsync(request.Email);
+            var newId = await _repository.CreateUserAsync(user);
+            Console.WriteLine($"DEBUG: User created with ID: {newId}");
+            return await _repository.GetUserByEmailAsync(normalizedEmail);
+        }
+
+        public async Task<IEnumerable<ModelUser>> GetAllUsersAsync()
+        {
+            return await _repository.GetAllUsersAsync();
+        }
+
+        public async Task<bool> DeleteUserAsync(int id)
+        {
+            return await _repository.DeleteUserAsync(id);
         }
 
         public async Task<LoginResponse?> LoginAsync(LoginRequest request)
         {
-            var user = await _repository.GetUserByEmailAsync(request.Email);
-            if (user == null || !BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
+            var normalizedEmail = request.Email.Trim();
+            Console.WriteLine($"DEBUG: Login attempt for '{normalizedEmail}' (Original: '{request.Email}')");
+            var user = await _repository.GetUserByEmailAsync(normalizedEmail);
+
+            if (user == null)
+            {
+                Console.WriteLine("DEBUG: User not found in database.");
+                return null;
+            }
+
+            Console.WriteLine($"DEBUG: User found. ID: {user.Id}, Role: {user.Role}, HashLength: {user.PasswordHash?.Length}");
+
+            bool verify = BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash);
+            Console.WriteLine($"DEBUG: Password verify result: {verify}");
+
+            if (!verify)
             {
                 return null;
             }

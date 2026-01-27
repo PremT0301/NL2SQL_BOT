@@ -34,6 +34,19 @@ public class InventoryRepository
         return await connection.ExecuteScalarAsync<int>(sql, user);
     }
 
+    public async Task<IEnumerable<User>> GetAllUsersAsync()
+    {
+        using var connection = CreateConnection();
+        return await connection.QueryAsync<User>("SELECT * FROM Users");
+    }
+
+    public async Task<bool> DeleteUserAsync(int id)
+    {
+        using var connection = CreateConnection();
+        var rowsAffected = await connection.ExecuteAsync("DELETE FROM Users WHERE Id = @Id", new { Id = id });
+        return rowsAffected > 0;
+    }
+
     public async Task<IEnumerable<dynamic>> ExecuteSafeQueryAsync(string sql)
     {
         using var connection = CreateConnection();

@@ -38,8 +38,11 @@ export const UserManagement: React.FC = () => {
             setNewUser({ email: '', password: '', role: 'USER' });
             setError('');
             fetchUsers();
-        } catch (err) {
-            setError("Failed to create user. Email might be taken.");
+            fetchUsers();
+        } catch (err: any) {
+            console.error("Create User Error:", err);
+            const msg = err.response?.data?.error || "Failed to create user. Email might be taken.";
+            setError(msg);
         }
     };
 

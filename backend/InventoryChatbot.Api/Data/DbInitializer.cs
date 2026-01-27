@@ -27,6 +27,8 @@ namespace InventoryChatbot.Api.Data
 
             await _repository.ExecuteSafeQueryAsync(createTableSql);
 
+            /* 
+            // Admin Seeding Removed as per request (User already seeded)
             // Seed Admin User if not exists
             var adminEmail = "admin@company.com";
             var existingAdmin = await _repository.GetUserByEmailAsync(adminEmail);
@@ -43,6 +45,7 @@ namespace InventoryChatbot.Api.Data
                 };
                 await _repository.CreateUserAsync(adminUser);
             }
+            */
         }
     }
 }

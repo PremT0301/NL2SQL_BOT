@@ -88,7 +88,7 @@ using (var scope = app.Services.CreateScope())
     try
     {
         await dbInitializer.InitializeAsync();
-        Console.WriteLine("Database initialized and Admin user seeded.");
+        Console.WriteLine("Database initialized.");
     }
     catch (Exception ex)
     {
