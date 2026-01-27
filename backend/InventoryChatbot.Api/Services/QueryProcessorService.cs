@@ -39,6 +39,7 @@ public class QueryProcessorService
             var llmLatency = (DateTime.UtcNow - llmStart).TotalMilliseconds;
 
             _metrics.RecordLatency("llm_latency", llmLatency);
+            Console.WriteLine($"DEBUG: LLM Generated SQL: {llmResult.Sql}");
             _logger.LogInformation("LLM Decision: Intent={Intent}, Emotion={Emotion}, Latency={Latency}ms",
                 llmResult.Intent, llmResult.Emotion, llmLatency);
         }

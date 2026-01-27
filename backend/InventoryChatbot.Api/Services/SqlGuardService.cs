@@ -15,6 +15,13 @@ public class SqlGuardService
         }
 
         sql = sql.Trim();
+        Console.WriteLine($"DEBUG: Guarding SQL: {sql}");
+
+        // 0. Auto-fix common singular table names (LLM Hallucination Fix)
+        // Only replace if whole word
+        sql = Regex.Replace(sql, @"\bProduct\b", "Products", RegexOptions.IgnoreCase);
+        sql = Regex.Replace(sql, @"\bSupplier\b", "Suppliers", RegexOptions.IgnoreCase);
+        sql = Regex.Replace(sql, @"\bOrder\b", "Orders", RegexOptions.IgnoreCase);
 
         // 1. Ensure starts with SELECT
         if (!sql.StartsWith("SELECT", StringComparison.OrdinalIgnoreCase))
