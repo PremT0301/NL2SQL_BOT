@@ -1,5 +1,8 @@
 using InventoryChatbot.Api.Data;
 using InventoryChatbot.Api.Services;
+using DotNetEnv;
+
+DotNetEnv.Env.Load();
 
 var builder = WebApplication.CreateBuilder(args);
 
