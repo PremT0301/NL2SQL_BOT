@@ -25,4 +25,12 @@ public class InventoryRepository
         // Dapper returns IEnumerable<dynamic> by default for strict string queries
         return await connection.QueryAsync(sql);
     }
+
+    public async Task<bool> TestConnectionAsync()
+    {
+        using var connection = CreateConnection();
+        connection.Open(); // Will throw if invalid
+        var result = await connection.ExecuteScalarAsync<int>("SELECT 1");
+        return result == 1;
+    }
 }

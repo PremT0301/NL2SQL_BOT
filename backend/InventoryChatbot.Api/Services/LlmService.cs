@@ -225,4 +225,39 @@ DO NOT violate any rule above.
             throw new Exception($"LLM did not return valid JSON: {contentStr}");
         }
     }
+    public async Task<bool> TestConnectionAsync()
+    {
+        // Simple pixel-cost ping or model list check would be ideal, 
+        // but let's try a minimal completion request to verify API Key.
+        var requestBody = new
+        {
+            model = _model,
+            messages = new[]
+            {
+                new { role = "user", content = "ping" }
+            },
+            max_tokens = 5
+        };
+
+        var jsonContent = JsonConvert.SerializeObject(requestBody);
+        var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+
+        // Ensure headers are set (in case they weren't persistent or this is a fresh scope)
+        _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _apiKey);
+        if (_httpClient.BaseAddress?.Host.Contains("openrouter.ai") == true && !_httpClient.DefaultRequestHeaders.Contains("HTTP-Referer"))
+        {
+            _httpClient.DefaultRequestHeaders.Add("HTTP-Referer", "http://localhost:5000");
+            _httpClient.DefaultRequestHeaders.Add("X-Title", "Inventory Chatbot");
+        }
+
+        var response = await _httpClient.PostAsync("chat/completions", content);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            var error = await response.Content.ReadAsStringAsync();
+            throw new Exception($"LLM Ping Failed: {response.StatusCode} - {error}");
+        }
+
+        return true;
+    }
 }
