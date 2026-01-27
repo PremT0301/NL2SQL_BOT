@@ -3,6 +3,13 @@ using InventoryChatbot.Api.Services;
 using DotNetEnv;
 
 DotNetEnv.Env.Load();
+var apiKey = Environment.GetEnvironmentVariable("LlmSettings__ApiKey");
+Console.WriteLine($"DEBUG: Startup API Key: '{apiKey}'");
+if (apiKey != null)
+{
+    Console.WriteLine($"DEBUG: Startup Key Length: {apiKey.Length}");
+    Console.WriteLine($"DEBUG: Startup Key StartsQuote: {apiKey.StartsWith("\"")}");
+}
 
 var builder = WebApplication.CreateBuilder(args);
 
