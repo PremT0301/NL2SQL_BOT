@@ -1,15 +1,16 @@
-using InventoryChatbot.Api.Data;
-using InventoryChatbot.Api.Services;
-using InventoryChatbot.Api.Middleware;
 using DotNetEnv;
+using InventoryChatbot.Api.Data;
+using InventoryChatbot.Api.Middleware;
+using InventoryChatbot.Api.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 DotNetEnv.Env.Load();
 var apiKey = Environment.GetEnvironmentVariable("LlmSettings__ApiKey");
-Console.WriteLine($"DEBUG: Startup API Key: '{apiKey}'");
 if (apiKey != null)
 {
-    Console.WriteLine($"DEBUG: Startup Key Length: {apiKey.Length}");
-    Console.WriteLine($"DEBUG: Startup Key StartsQuote: {apiKey.StartsWith("\"")}");
+    Console.WriteLine($"DEBUG: Startup API Key Found (Length: {apiKey.Length})");
 }
 
 var builder = WebApplication.CreateBuilder(args);
@@ -17,22 +18,48 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-// builder.Services.AddSwaggerGen(); // Not strictly requested, keeping minimal
 
 // Register Custom Services
 builder.Services.AddHttpClient<LlmService>();
 builder.Services.AddScoped<SqlGuardService>();
 builder.Services.AddScoped<InventoryRepository>();
 builder.Services.AddScoped<QueryProcessorService>();
+builder.Services.AddTransient<AuthService>();
+builder.Services.AddTransient<DbInitializer>();
 builder.Services.AddSingleton<MetricsService>();
 
-// CORS Setup (Allow All for Dev, restrict in Prod)
+// JWT Authentication
+var jwtSettings = builder.Configuration.GetSection("JwtSettings");
+// Fallback key if not present (Development only)
+var secretStr = jwtSettings["Secret"] ?? "super_secret_key_change_me_in_prod_12345";
+var secretKey = Encoding.UTF8.GetBytes(secretStr);
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = jwtSettings["Issuer"] ?? "InventoryChatbot",
+        ValidAudience = jwtSettings["Audience"] ?? "InventoryChatbotClient",
+        IssuerSigningKey = new SymmetricSecurityKey(secretKey)
+    };
+});
+
+// CORS Setup
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowReactApp",
         policy =>
         {
-            policy.AllowAnyOrigin() // Replace with strictly "http://localhost:5173" if needed
+            policy.AllowAnyOrigin()
                   .AllowAnyHeader()
                   .AllowAnyMethod();
         });
@@ -44,13 +71,37 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     // app.UseSwagger();
-    // app.UseSwaggerUI();
 }
 
 app.UseMiddleware<RequestLoggingMiddleware>();
-app.UseHttpsRedirection(); // Optional, often disabled in dev tunnels but good for prod
+app.UseHttpsRedirection();
 app.UseCors("AllowReactApp");
+
+app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 
-app.Run();
+// Initialize Database on Startup
+using (var scope = app.Services.CreateScope())
+{
+    var dbInitializer = scope.ServiceProvider.GetRequiredService<DbInitializer>();
+    try
+    {
+        await dbInitializer.InitializeAsync();
+        Console.WriteLine("Database initialized and Admin user seeded.");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Error initializing database: {ex.Message}");
+    }
+}
+
+try
+{
+    app.Run();
+}
+catch (Exception ex)
+{
+    Console.WriteLine("CRITICAL STARTUP ERROR: " + ex.ToString());
+    throw;
+}

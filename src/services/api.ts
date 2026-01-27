@@ -1,24 +1,50 @@
 import axios from 'axios';
 
-// Define the expected response structure from the API
-export interface ApiResponse {
+const api = axios.create({
+    baseURL: 'http://localhost:5085/api', // Adjust base URL if needed
+    headers: {
+        'Content-Type': 'application/json',
+    },
+});
+
+// Request interceptor to attach JWT token
+api.interceptors.request.use(
+    (config) => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            config.headers['Authorization'] = `Bearer ${token}`;
+        }
+        return config;
+    },
+    (error) => {
+        return Promise.reject(error);
+    }
+);
+
+// Response interceptor to handle 401/403 errors
+api.interceptors.response.use(
+    (response) => response,
+    (error) => {
+        if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+            // Clear storage and optionally redirect to login
+            // localStorage.removeItem('token');
+            // window.location.href = '/login'; 
+            // Commented out to handle it in AuthContext or components for better UX
+        }
+        return Promise.reject(error);
+    }
+);
+
+export interface QueryResponse {
     reply: string;
-    emotion: 'neutral' | 'frustrated' | 'urgent' | 'happy';
-    intent: string;
-    data: any[];
+    emotion?: 'neutral' | 'happy' | 'frustrated' | 'urgent';
+    intent?: string;
+    data?: any[];
 }
 
-// Ensure this matches your .NET Web API URL
-const API_BASE_URL = 'http://localhost:5085/api';
-
-export const sendMessage = async (message: string): Promise<ApiResponse> => {
-    try {
-        const response = await axios.post<ApiResponse>(`${API_BASE_URL}/query`, {
-            message,
-        });
-        return response.data;
-    } catch (error) {
-        console.error('Error sending message:', error);
-        throw error;
-    }
+export const sendMessage = async (message: string): Promise<QueryResponse> => {
+    const response = await api.post<QueryResponse>('/query', { message });
+    return response.data;
 };
+
+export default api;

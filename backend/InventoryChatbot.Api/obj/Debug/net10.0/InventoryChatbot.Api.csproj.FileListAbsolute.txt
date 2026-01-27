@@ -53,3 +53,12 @@ D:\EDU\NL2SQL_BOT\backend\InventoryChatbot.Api\obj\Debug\net10.0\refint\Inventor
 D:\EDU\NL2SQL_BOT\backend\InventoryChatbot.Api\obj\Debug\net10.0\InventoryChatbot.Api.pdb
 D:\EDU\NL2SQL_BOT\backend\InventoryChatbot.Api\obj\Debug\net10.0\InventoryChatbot.Api.genruntimeconfig.cache
 D:\EDU\NL2SQL_BOT\backend\InventoryChatbot.Api\obj\Debug\net10.0\ref\InventoryChatbot.Api.dll
+D:\EDU\NL2SQL_BOT\backend\InventoryChatbot.Api\bin\Debug\net10.0\BCrypt.Net-Next.dll
+D:\EDU\NL2SQL_BOT\backend\InventoryChatbot.Api\bin\Debug\net10.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+D:\EDU\NL2SQL_BOT\backend\InventoryChatbot.Api\bin\Debug\net10.0\Microsoft.IdentityModel.Abstractions.dll
+D:\EDU\NL2SQL_BOT\backend\InventoryChatbot.Api\bin\Debug\net10.0\Microsoft.IdentityModel.JsonWebTokens.dll
+D:\EDU\NL2SQL_BOT\backend\InventoryChatbot.Api\bin\Debug\net10.0\Microsoft.IdentityModel.Logging.dll
+D:\EDU\NL2SQL_BOT\backend\InventoryChatbot.Api\bin\Debug\net10.0\Microsoft.IdentityModel.Protocols.dll
+D:\EDU\NL2SQL_BOT\backend\InventoryChatbot.Api\bin\Debug\net10.0\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
+D:\EDU\NL2SQL_BOT\backend\InventoryChatbot.Api\bin\Debug\net10.0\Microsoft.IdentityModel.Tokens.dll
+D:\EDU\NL2SQL_BOT\backend\InventoryChatbot.Api\bin\Debug\net10.0\System.IdentityModel.Tokens.Jwt.dll
