@@ -8,6 +8,7 @@ D:\EDU\NL2SQL_BOT\backend\InventoryChatbot.Api\bin\Debug\net10.0\InventoryChatbo
 D:\EDU\NL2SQL_BOT\backend\InventoryChatbot.Api\bin\Debug\net10.0\InventoryChatbot.Api.pdb
 D:\EDU\NL2SQL_BOT\backend\InventoryChatbot.Api\bin\Debug\net10.0\BouncyCastle.Cryptography.dll
 D:\EDU\NL2SQL_BOT\backend\InventoryChatbot.Api\bin\Debug\net10.0\Dapper.dll
+D:\EDU\NL2SQL_BOT\backend\InventoryChatbot.Api\bin\Debug\net10.0\DotNetEnv.dll
 D:\EDU\NL2SQL_BOT\backend\InventoryChatbot.Api\bin\Debug\net10.0\Google.Protobuf.dll
 D:\EDU\NL2SQL_BOT\backend\InventoryChatbot.Api\bin\Debug\net10.0\K4os.Compression.LZ4.dll
 D:\EDU\NL2SQL_BOT\backend\InventoryChatbot.Api\bin\Debug\net10.0\K4os.Compression.LZ4.Streams.dll
@@ -16,6 +17,7 @@ D:\EDU\NL2SQL_BOT\backend\InventoryChatbot.Api\bin\Debug\net10.0\Microsoft.AspNe
 D:\EDU\NL2SQL_BOT\backend\InventoryChatbot.Api\bin\Debug\net10.0\Microsoft.OpenApi.dll
 D:\EDU\NL2SQL_BOT\backend\InventoryChatbot.Api\bin\Debug\net10.0\MySql.Data.dll
 D:\EDU\NL2SQL_BOT\backend\InventoryChatbot.Api\bin\Debug\net10.0\Newtonsoft.Json.dll
+D:\EDU\NL2SQL_BOT\backend\InventoryChatbot.Api\bin\Debug\net10.0\Sprache.dll
 D:\EDU\NL2SQL_BOT\backend\InventoryChatbot.Api\bin\Debug\net10.0\System.Configuration.ConfigurationManager.dll
 D:\EDU\NL2SQL_BOT\backend\InventoryChatbot.Api\bin\Debug\net10.0\System.Security.Cryptography.ProtectedData.dll
 D:\EDU\NL2SQL_BOT\backend\InventoryChatbot.Api\bin\Debug\net10.0\System.Security.Permissions.dll
@@ -35,6 +37,7 @@ D:\EDU\NL2SQL_BOT\backend\InventoryChatbot.Api\obj\Debug\net10.0\InventoryChatbo
 D:\EDU\NL2SQL_BOT\backend\InventoryChatbot.Api\obj\Debug\net10.0\InventoryChatbot.Api.csproj.CoreCompileInputs.cache
 D:\EDU\NL2SQL_BOT\backend\InventoryChatbot.Api\obj\Debug\net10.0\InventoryChatbot.Api.MvcApplicationPartsAssemblyInfo.cs
 D:\EDU\NL2SQL_BOT\backend\InventoryChatbot.Api\obj\Debug\net10.0\InventoryChatbot.Api.MvcApplicationPartsAssemblyInfo.cache
+D:\EDU\NL2SQL_BOT\backend\InventoryChatbot.Api\obj\Debug\net10.0\InventoryChatbot.Api.sourcelink.json
 D:\EDU\NL2SQL_BOT\backend\InventoryChatbot.Api\obj\Debug\net10.0\rjimswa.dswa.cache.json
 D:\EDU\NL2SQL_BOT\backend\InventoryChatbot.Api\obj\Debug\net10.0\rjsmrazor.dswa.cache.json
 D:\EDU\NL2SQL_BOT\backend\InventoryChatbot.Api\obj\Debug\net10.0\rjsmcshtml.dswa.cache.json
@@ -50,6 +53,3 @@ D:\EDU\NL2SQL_BOT\backend\InventoryChatbot.Api\obj\Debug\net10.0\refint\Inventor
 D:\EDU\NL2SQL_BOT\backend\InventoryChatbot.Api\obj\Debug\net10.0\InventoryChatbot.Api.pdb
 D:\EDU\NL2SQL_BOT\backend\InventoryChatbot.Api\obj\Debug\net10.0\InventoryChatbot.Api.genruntimeconfig.cache
 D:\EDU\NL2SQL_BOT\backend\InventoryChatbot.Api\obj\Debug\net10.0\ref\InventoryChatbot.Api.dll
-D:\EDU\NL2SQL_BOT\backend\InventoryChatbot.Api\obj\Debug\net10.0\InventoryChatbot.Api.sourcelink.json
-D:\EDU\NL2SQL_BOT\backend\InventoryChatbot.Api\bin\Debug\net10.0\DotNetEnv.dll
-D:\EDU\NL2SQL_BOT\backend\InventoryChatbot.Api\bin\Debug\net10.0\Sprache.dll

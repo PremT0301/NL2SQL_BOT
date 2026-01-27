@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("InventoryChatbot.Api")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1c04cea941ec17f9432a29e71d9c00fdba344684")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+22607a41fac6a5e8b34e8954955210abed00aaf2")]
 [assembly: System.Reflection.AssemblyProductAttribute("InventoryChatbot.Api")]
 [assembly: System.Reflection.AssemblyTitleAttribute("InventoryChatbot.Api")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
