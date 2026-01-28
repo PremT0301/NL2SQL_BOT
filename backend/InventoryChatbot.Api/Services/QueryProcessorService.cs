@@ -59,6 +59,7 @@ public class QueryProcessorService
         if (string.IsNullOrWhiteSpace(llmResult.Sql)
             || llmResult.Sql.Trim().ToUpper() == "NO_SQL"
             || llmResult.Intent == "GREETING"
+            || llmResult.Intent == "MODIFICATION"
             || llmResult.Sql.Trim() == "SELECT ..."
             || llmResult.Sql.Trim() == "SELECT")
         {
