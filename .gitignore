@@ -1,3 +1,7 @@
+# .NET Build Folders
+bin/
+obj/
+
 # Logs
 logs
 *.log
