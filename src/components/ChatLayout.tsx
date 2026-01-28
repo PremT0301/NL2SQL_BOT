@@ -1,5 +1,6 @@
 import React from 'react';
 import { Box, useTheme, useMediaQuery } from '@mui/material';
+import { Navbar } from './Navbar';
 
 interface ChatLayoutProps {
     sidebar: React.ReactNode;
@@ -37,6 +38,7 @@ export const ChatLayout: React.FC<ChatLayoutProps> = ({ sidebar, children }) => 
                     overflow: 'hidden'
                 }}
             >
+                <Navbar />
                 {children}
             </Box>
         </Box>

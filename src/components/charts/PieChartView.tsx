@@ -4,10 +4,10 @@ import {
     Pie,
     Cell,
     Tooltip,
-    Legend,
     ResponsiveContainer
 } from 'recharts';
 import { Box, Typography } from '@mui/material';
+import { CustomTooltip } from './CustomTooltip';
 
 interface PieChartViewProps {
     data: any[];
@@ -37,6 +37,19 @@ export const PieChartView: React.FC<PieChartViewProps> = ({ data, title, activeE
 
     if (!dataKey || !nameKey) {
         return null;
+    }
+
+    if (data.length > 6) {
+        return (
+            <Box sx={{ width: '100%', height: 350, p: 2, bgcolor: 'background.paper', borderRadius: 2, display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column' }}>
+                <Typography variant="body2" color="text.secondary" align="center">
+                    Too many categories ({data.length}) for a Pie Chart.
+                </Typography>
+                <Typography variant="caption" color="text.secondary" align="center">
+                    Please use a Bar Chart or filter your query for better visibility.
+                </Typography>
+            </Box>
+        );
     }
 
     return (
@@ -79,23 +92,7 @@ export const PieChartView: React.FC<PieChartViewProps> = ({ data, title, activeE
                             );
                         })}
                     </Pie>
-                    <Tooltip
-                        contentStyle={{
-                            backgroundColor: '#fff',
-                            border: 'none',
-                            boxShadow: '0px 4px 12px rgba(0,0,0,0.1)',
-                            borderRadius: 8,
-                            fontSize: '12px'
-                        }}
-                    />
-                    {data.length <= 6 && (
-                        <Legend
-                            verticalAlign="bottom"
-                            height={36}
-                            iconType="circle"
-                            wrapperStyle={{ fontSize: '12px' }}
-                        />
-                    )}
+                    <Tooltip content={<CustomTooltip />} />
                 </PieChart>
             </ResponsiveContainer>
         </Box>

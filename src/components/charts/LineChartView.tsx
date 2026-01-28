@@ -9,6 +9,7 @@ import {
     ResponsiveContainer
 } from 'recharts';
 import { Box, Typography, useTheme } from '@mui/material';
+import { CustomTooltip } from './CustomTooltip';
 
 interface LineChartViewProps {
     data: any[];
@@ -89,15 +90,7 @@ export const LineChartView: React.FC<LineChartViewProps> = ({ data, title, activ
                         tickLine={false}
                         axisLine={false}
                     />
-                    <Tooltip
-                        contentStyle={{
-                            backgroundColor: '#fff',
-                            border: 'none',
-                            boxShadow: '0px 4px 12px rgba(0,0,0,0.1)',
-                            borderRadius: 8,
-                            fontSize: '12px'
-                        }}
-                    />
+                    <Tooltip content={<CustomTooltip />} cursor={{ stroke: theme.palette.text.secondary, strokeWidth: 1, strokeDasharray: '3 3' }} />
                     <Line
                         type="monotone"
                         dataKey={dataKey}

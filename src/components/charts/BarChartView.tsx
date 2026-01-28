@@ -10,6 +10,7 @@ import {
     Cell
 } from 'recharts';
 import { Box, Typography, useTheme } from '@mui/material';
+import { CustomTooltip } from './CustomTooltip';
 
 interface BarChartViewProps {
     data: any[];
@@ -63,16 +64,7 @@ export const BarChartView: React.FC<BarChartViewProps> = ({ data, title, activeE
                         tickLine={false}
                         axisLine={false}
                     />
-                    <Tooltip
-                        cursor={{ fill: 'transparent' }}
-                        contentStyle={{
-                            backgroundColor: '#fff',
-                            border: 'none',
-                            boxShadow: '0px 4px 12px rgba(0,0,0,0.1)',
-                            borderRadius: 8,
-                            fontSize: '12px'
-                        }}
-                    />
+                    <Tooltip content={<CustomTooltip />} cursor={{ fill: 'transparent' }} />
 
                     <Bar
                         dataKey={dataKey}
