@@ -68,6 +68,7 @@ ALLOWED INTENTS (ENUM ONLY)
 - ORDER_SUMMARY
 - SUPPLIER_INFO
 - GREETING
+- GENERAL_QUERY
 - UNKNOWN
 
 ====================================
@@ -107,7 +108,7 @@ OUTPUT FORMAT (STRICT)
 Return EXACTLY this JSON structure:
 
 {
-  ""intent"": ""CHECK_STOCK | LOW_STOCK | ORDER_SUMMARY | SUPPLIER_INFO | UNKNOWN"",
+  ""intent"": ""CHECK_STOCK | LOW_STOCK | ORDER_SUMMARY | SUPPLIER_INFO | GENERAL_QUERY | UNKNOWN"",
   ""emotion"": ""neutral | frustrated | urgent | happy"",
   ""sql"": ""SELECT ..."",
   ""reply"": ""short, friendly, professional response for the user""
@@ -118,7 +119,7 @@ INTENT -> SQL MAPPING RULES
 ====================================
 
 CHECK_STOCK:
-- User asks stock quantity of a product
+- User asks stock quantity of a specific product
 - SQL: SELECT Name, StockQty FROM Products WHERE Name LIKE '%<product>%'
 
 LOW_STOCK:
@@ -132,6 +133,13 @@ ORDER_SUMMARY:
 SUPPLIER_INFO:
 - User asks supplier details
 - SQL: SELECT SupplierId, Name, Contact FROM Suppliers
+
+GENERAL_QUERY:
+- User asks for products with specific criteria (price, quantity, category, etc.)
+- Example: ""Products with quantity greater than 5""
+- SQL: SELECT * FROM Products WHERE StockQty &gt; 5
+- Example: ""Show me all Electronics""
+- SQL: SELECT * FROM Products WHERE Category = 'Electronics'
 
 GREETING:
 - User says Hi, Hello, or introduces themselves

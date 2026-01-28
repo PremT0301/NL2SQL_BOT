@@ -2,6 +2,7 @@ import React from 'react';
 import { Box, Typography, Paper, Chip } from '@mui/material';
 import type { ChatMessage } from '../models/ChatMessage';
 import { DataTable } from './DataTable';
+import { ChartRenderer } from './ChartRenderer';
 import FaceIcon from '@mui/icons-material/Face';
 import SmartToyIcon from '@mui/icons-material/SmartToy';
 
@@ -79,6 +80,8 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
                     {!isUser && message.data && message.data.length > 0 && (
                         <Box sx={{ mt: 2 }}>
                             <DataTable data={message.data} />
+                            {/* Automatic Visualization */}
+                            <ChartRenderer data={message.data} intent={message.intent} />
                         </Box>
                     )}
 

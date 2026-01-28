@@ -37,6 +37,7 @@ export const ChatWindow: React.FC = () => {
                 sender: 'bot',
                 text: response.reply,
                 emotion: response.emotion,
+                intent: response.intent,
                 data: response.data,
                 timestamp: new Date().toISOString(),
             };
