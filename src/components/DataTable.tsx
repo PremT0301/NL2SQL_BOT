@@ -14,9 +14,11 @@ import {
 
 interface DataTableProps {
     data: any[];
+    activeElementId?: string | null;
+    onHover?: (id: string | null) => void;
 }
 
-export const DataTable: React.FC<DataTableProps> = ({ data }) => {
+export const DataTable: React.FC<DataTableProps> = ({ data, activeElementId, onHover }) => {
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
 
@@ -25,8 +27,10 @@ export const DataTable: React.FC<DataTableProps> = ({ data }) => {
     }
 
     // derive columns from the first item
-    // ensuring we handle potential empty objects gracefully
     const columns = Object.keys(data[0] || {});
+
+    // Identify ID key for highlighting (same logic as charts)
+    const nameKey = columns.find(k => typeof data[0][k] === 'string') || columns[0];
 
     const handleChangePage = (_event: unknown, newPage: number) => {
         setPage(newPage);
@@ -64,18 +68,39 @@ export const DataTable: React.FC<DataTableProps> = ({ data }) => {
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {paginatedData.map((row, index) => (
-                                <TableRow hover role="checkbox" tabIndex={-1} key={index}>
-                                    {columns.map((column) => (
-                                        <TableCell key={column}>
-                                            {/* Render object/array as string if nested, otherwise value */}
-                                            {typeof row[column] === 'object'
-                                                ? JSON.stringify(row[column])
-                                                : String(row[column])}
-                                        </TableCell>
-                                    ))}
-                                </TableRow>
-                            ))}
+                            {paginatedData.map((row, index) => {
+                                const rowId = row[nameKey]; // Value used for identification
+                                const isHighlighted = activeElementId === rowId;
+
+                                return (
+                                    <TableRow
+                                        hover
+                                        role="checkbox"
+                                        tabIndex={-1}
+                                        key={index}
+                                        selected={isHighlighted}
+                                        onMouseEnter={() => onHover && onHover(rowId)}
+                                        onMouseLeave={() => onHover && onHover(null)}
+                                        sx={{
+                                            '&.Mui-selected': {
+                                                backgroundColor: 'rgba(25, 118, 210, 0.08) !important',
+                                            },
+                                            '&.Mui-selected:hover': {
+                                                backgroundColor: 'rgba(25, 118, 210, 0.12) !important',
+                                            }
+                                        }}
+                                    >
+                                        {columns.map((column) => (
+                                            <TableCell key={column}>
+                                                {/* Render object/array as string if nested, otherwise value */}
+                                                {typeof row[column] === 'object'
+                                                    ? JSON.stringify(row[column])
+                                                    : String(row[column])}
+                                            </TableCell>
+                                        ))}
+                                    </TableRow>
+                                );
+                            })}
                         </TableBody>
                     </Table>
                 </TableContainer>

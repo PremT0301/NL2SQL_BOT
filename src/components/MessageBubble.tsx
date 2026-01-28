@@ -18,9 +18,54 @@ const emotionStyles: Record<string, { border: string; bg: string; badge?: string
     happy: { border: '#43a047', bg: '#e8f5e9', badge: 'happy' },         // Green
 };
 
+// Extracted to handle complex visualization state without cluttering the main bubble
+const BubbleContent: React.FC<{ data: any[], intent: string }> = ({ data, intent }) => {
+    // 1. Initialize from LocalStorage
+    const [visType, setVisType] = useState<VisualizationType>(() => {
+        const saved = localStorage.getItem('user_viz_pref');
+        return (saved as VisualizationType) || 'none';
+    });
+
+    // 2. Cross-Highlighting State
+    const [activeElementId, setActiveElementId] = useState<string | null>(null);
+
+    // 3. Persist Preference
+    const handleVisTypeChange = (type: VisualizationType) => {
+        setVisType(type);
+        localStorage.setItem('user_viz_pref', type);
+    };
+
+    return (
+        <Box sx={{ mt: 2 }}>
+            {/* 1. ALWAYS render Table first */}
+            <DataTable
+                data={data}
+                activeElementId={activeElementId}
+                onHover={setActiveElementId}
+            />
+
+            {/* 2. Visualization Selector (User Control) */}
+            <VisualizationSelector
+                data={data}
+                intent={intent}
+                selected={visType}
+                onSelect={handleVisTypeChange}
+            />
+
+            {/* 3. Render Selected Chart */}
+            <ChartRenderer
+                data={data}
+                intent={intent}
+                type={visType}
+                activeElementId={activeElementId}
+                onHover={setActiveElementId}
+            />
+        </Box>
+    );
+};
+
 export const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
     const isUser = message.sender === 'user';
-    const [visType, setVisType] = useState<VisualizationType>('none');
 
     // Default values for user or unknown emotion
     let emotionConfig = emotionStyles.neutral;
@@ -80,25 +125,10 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
 
                     {/* Data Table & Visualization (Bot only, if data exists) */}
                     {!isUser && message.data && message.data.length > 0 && (
-                        <Box sx={{ mt: 2 }}>
-                            {/* 1. ALWAYS render Table first */}
-                            <DataTable data={message.data} />
-
-                            {/* 2. Visualization Selector (User Control) */}
-                            <VisualizationSelector
-                                data={message.data}
-                                intent={message.intent || ''}
-                                selected={visType}
-                                onSelect={setVisType}
-                            />
-
-                            {/* 3. Render Selected Chart */}
-                            <ChartRenderer
-                                data={message.data}
-                                intent={message.intent || ''}
-                                type={visType}
-                            />
-                        </Box>
+                        <BubbleContent
+                            data={message.data}
+                            intent={message.intent || ''}
+                        />
                     )}
 
                 </Paper>

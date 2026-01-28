@@ -12,9 +12,11 @@ import { Box, Typography } from '@mui/material';
 interface PieChartViewProps {
     data: any[];
     title?: string;
+    activeElementId?: string | null;
+    onHover?: (id: string | null) => void;
 }
 
-export const PieChartView: React.FC<PieChartViewProps> = ({ data, title }) => {
+export const PieChartView: React.FC<PieChartViewProps> = ({ data, title, activeElementId, onHover }) => {
     // const theme = useTheme(); // Removed unused theme
 
     // Muted/Professional Palette
@@ -57,9 +59,25 @@ export const PieChartView: React.FC<PieChartViewProps> = ({ data, title }) => {
                         nameKey={nameKey}
                         isAnimationActive={true}
                     >
-                        {data.map((_entry, index) => (
-                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} stroke="none" />
-                        ))}
+                        {data.map((entry, index) => {
+                            const entryId = entry[nameKey];
+                            const isDimmed = activeElementId && activeElementId !== entryId;
+
+                            return (
+                                <Cell
+                                    key={`cell-${index}`}
+                                    fill={COLORS[index % COLORS.length]}
+                                    stroke="none"
+                                    fillOpacity={isDimmed ? 0.3 : 1}
+                                    onMouseEnter={() => onHover && onHover(entryId)}
+                                    onMouseLeave={() => onHover && onHover(null)}
+                                    // Accessibility
+                                    tabIndex={0}
+                                    onFocus={() => onHover && onHover(entryId)}
+                                    onBlur={() => onHover && onHover(null)}
+                                />
+                            );
+                        })}
                     </Pie>
                     <Tooltip
                         contentStyle={{

@@ -14,9 +14,11 @@ import { Box, Typography, useTheme } from '@mui/material';
 interface BarChartViewProps {
     data: any[];
     title?: string;
+    activeElementId?: string | null;
+    onHover?: (id: string | null) => void;
 }
 
-export const BarChartView: React.FC<BarChartViewProps> = ({ data, title }) => {
+export const BarChartView: React.FC<BarChartViewProps> = ({ data, title, activeElementId, onHover }) => {
     const theme = useTheme();
 
     const { xAxisKey, dataKey } = useMemo(() => {
@@ -78,9 +80,24 @@ export const BarChartView: React.FC<BarChartViewProps> = ({ data, title }) => {
                         radius={[6, 6, 0, 0]}
                         animationDuration={1000}
                     >
-                        {data.map((_entry, index) => (
-                            <Cell key={`cell-${index}`} fill={theme.palette.primary.main} />
-                        ))}
+                        {data.map((entry, index) => {
+                            const entryId = entry[xAxisKey];
+                            const isDimmed = activeElementId && activeElementId !== entryId;
+
+                            return (
+                                <Cell
+                                    key={`cell-${index}`}
+                                    fill={theme.palette.primary.main}
+                                    fillOpacity={isDimmed ? 0.3 : 1}
+                                    onMouseEnter={() => onHover && onHover(entryId)}
+                                    onMouseLeave={() => onHover && onHover(null)}
+                                    // Accessibility
+                                    tabIndex={0}
+                                    onFocus={() => onHover && onHover(entryId)}
+                                    onBlur={() => onHover && onHover(null)}
+                                />
+                            );
+                        })}
                     </Bar>
                 </BarChart>
             </ResponsiveContainer>

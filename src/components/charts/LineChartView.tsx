@@ -13,9 +13,11 @@ import { Box, Typography, useTheme } from '@mui/material';
 interface LineChartViewProps {
     data: any[];
     title?: string;
+    activeElementId?: string | null;
+    onHover?: (id: string | null) => void;
 }
 
-export const LineChartView: React.FC<LineChartViewProps> = ({ data, title }) => {
+export const LineChartView: React.FC<LineChartViewProps> = ({ data, title, activeElementId, onHover }) => {
     const theme = useTheme();
 
     const { xAxisKey, dataKey } = useMemo(() => {
@@ -34,6 +36,32 @@ export const LineChartView: React.FC<LineChartViewProps> = ({ data, title }) => 
     if (!dataKey || !xAxisKey) {
         return null;
     }
+
+    // Custom Dot to handle Highlighting & Accessibility on points
+    const CustomDot = (props: any) => {
+        const { cx, cy, payload } = props;
+        const entryId = payload[xAxisKey];
+        const isActive = activeElementId === entryId;
+        const isDimmed = activeElementId && !isActive;
+
+        return (
+            <circle
+                cx={cx}
+                cy={cy}
+                r={isActive ? 6 : 4}
+                fill={theme.palette.primary.main}
+                fillOpacity={isDimmed ? 0.3 : 1}
+                strokeWidth={isActive ? 2 : 0}
+                stroke="#fff"
+                onMouseEnter={() => onHover && onHover(entryId)}
+                onMouseLeave={() => onHover && onHover(null)}
+                tabIndex={0}
+                onFocus={() => onHover && onHover(entryId)}
+                onBlur={() => onHover && onHover(null)}
+                style={{ cursor: 'pointer', transition: 'all 0.3s ease' }}
+            />
+        );
+    };
 
     return (
         <Box sx={{ width: '100%', height: 350, p: 2, bgcolor: 'background.paper', borderRadius: 2 }}>
@@ -75,8 +103,9 @@ export const LineChartView: React.FC<LineChartViewProps> = ({ data, title }) => 
                         dataKey={dataKey}
                         stroke={theme.palette.primary.main}
                         strokeWidth={3}
-                        dot={{ r: 3, fill: theme.palette.primary.main, strokeWidth: 0 }}
-                        activeDot={{ r: 6 }}
+                        strokeOpacity={activeElementId ? 0.3 : 1} // Dim line if checking specific point
+                        dot={<CustomDot />}
+                        activeDot={false} // CustomDot handles active state
                         animationDuration={1500}
                     />
                 </LineChart>
