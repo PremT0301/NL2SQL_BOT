@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Box, Typography, Paper, Chip } from '@mui/material';
 import type { ChatMessage } from '../models/ChatMessage';
 import { DataTable } from './DataTable';
 import { ChartRenderer } from './ChartRenderer';
+import { VisualizationSelector, type VisualizationType } from './VisualizationSelector';
 import FaceIcon from '@mui/icons-material/Face';
 import SmartToyIcon from '@mui/icons-material/SmartToy';
 
@@ -19,6 +20,7 @@ const emotionStyles: Record<string, { border: string; bg: string; badge?: string
 
 export const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
     const isUser = message.sender === 'user';
+    const [visType, setVisType] = useState<VisualizationType>('none');
 
     // Default values for user or unknown emotion
     let emotionConfig = emotionStyles.neutral;
@@ -35,7 +37,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
                 width: '100%',
             }}
         >
-            <Box sx={{ maxWidth: '85%', minWidth: '300px' }}>
+            <Box sx={{ maxWidth: '90%', minWidth: '350px' }}>
                 <Paper
                     elevation={1}
                     sx={{
@@ -76,12 +78,26 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
                         {message.text}
                     </Typography>
 
-                    {/* Data Table (Bot only, if data exists) */}
+                    {/* Data Table & Visualization (Bot only, if data exists) */}
                     {!isUser && message.data && message.data.length > 0 && (
                         <Box sx={{ mt: 2 }}>
+                            {/* 1. ALWAYS render Table first */}
                             <DataTable data={message.data} />
-                            {/* Automatic Visualization */}
-                            <ChartRenderer data={message.data} intent={message.intent} />
+
+                            {/* 2. Visualization Selector (User Control) */}
+                            <VisualizationSelector
+                                data={message.data}
+                                intent={message.intent || ''}
+                                selected={visType}
+                                onSelect={setVisType}
+                            />
+
+                            {/* 3. Render Selected Chart */}
+                            <ChartRenderer
+                                data={message.data}
+                                intent={message.intent || ''}
+                                type={visType}
+                            />
                         </Box>
                     )}
 

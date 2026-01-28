@@ -1,113 +1,87 @@
 import React, { useMemo } from 'react';
-import { BarChartView } from './BarChartView';
-import { LineChartView } from './LineChartView';
-import { PieChartView } from './PieChartView';
-import { Box } from '@mui/material';
+import { Box, Fade, Typography } from '@mui/material';
+import type { VisualizationType } from './VisualizationSelector';
+import { BarChartView } from './charts/BarChartView';
+import { LineChartView } from './charts/LineChartView';
+import { PieChartView } from './charts/PieChartView';
 
 interface ChartRendererProps {
     data: any[];
-    intent?: string;
+    intent: string;
+    type: VisualizationType;
 }
 
-export const ChartRenderer: React.FC<ChartRendererProps> = ({ data, intent }) => {
+export const ChartRenderer: React.FC<ChartRendererProps> = ({ data, intent, type }) => {
 
-    const chartConfig = useMemo(() => {
-        if (!data || data.length < 2) {
-            return null;
-        }
+    // Process Data: Top 8 + Others
+    const processedData = useMemo(() => {
+        if (!data || data.length === 0) return [];
+        if (type === 'line') return data; // Don't limit line charts (time series usually)
 
+        // 1. Identification
         const keys = Object.keys(data[0]);
+        const nameKey = keys.find(k => typeof data[0][k] === 'string') || keys[0];
+        const valueKey = keys.find(k => typeof data[0][k] === 'number');
 
-        // Helper to find key by partial match
-        const findKey = (partials: string[]) => {
-            return keys.find(k => partials.some(p => k.toLowerCase().includes(p)));
-        };
+        if (!valueKey) return data; // Cannot sort/limit without value
 
-        const numericKey = keys.find(k => typeof data[0][k] === 'number');
+        // 2. Sorting
+        const sorted = [...data].sort((a, b) => (b[valueKey] as number) - (a[valueKey] as number));
 
-        // 1. Time-Based Data -> Line Chart
-        const dateKey = findKey(['date', 'time', 'created', 'period']);
-        if (dateKey && numericKey) {
-            return {
-                type: 'line',
-                dataKey: numericKey,
-                xAxisKey: dateKey,
-                title: 'Trend Analysis'
-            };
-        }
+        // 3. Limiting
+        if (sorted.length <= 8) return sorted;
 
-        // 2. Category Distribution -> Pie Chart
-        // Usually if we have 'Category' and a number
-        const categoryKey = findKey(['category', 'status', 'type']);
-        if (categoryKey && numericKey && data.length <= 10) { // Limit slices for Pie
-            return {
-                type: 'pie',
-                dataKey: numericKey,
-                nameKey: categoryKey,
-                title: 'Distribution'
-            };
-        }
+        const top8 = sorted.slice(0, 8);
+        const others = sorted.slice(8);
 
-        // 3. Stock / Quantity Analysis -> Bar Chart
-        const productKey = findKey(['product', 'item', 'name']);
-        const quantityKey = findKey(['quantity', 'stock', 'qty', 'count', 'total']);
+        const othersSum = others.reduce((sum, item) => sum + (item[valueKey] as number), 0);
 
-        if (productKey && (quantityKey || numericKey)) {
-            return {
-                type: 'bar',
-                dataKey: quantityKey || numericKey,
-                xAxisKey: productKey,
-                title: intent === 'LOW_STOCK' ? 'Low Stock Alert' : 'Overview',
-                highlightLowStock: intent === 'LOW_STOCK' || (quantityKey || numericKey)?.toLowerCase().includes('stock')
-            };
-        }
+        return [
+            ...top8,
+            { [nameKey]: 'Others', [valueKey]: othersSum }
+        ];
 
-        // Fallback: If we have a string and a number, try Bar Chart
-        const stringKey = keys.find(k => typeof data[0][k] === 'string');
-        if (stringKey && numericKey) {
-            return {
-                type: 'bar',
-                dataKey: numericKey,
-                xAxisKey: stringKey,
-                title: 'Data Visualization'
-            };
-        }
+    }, [data, type]);
 
-        return null;
-    }, [data, intent]);
+    const title = useMemo(() => {
+        if (!intent) return undefined;
+        // Clean Title Generation
+        return intent
+            .split('_')
+            .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+            .join(' ')
+            .replace(/Check |Get |List |Show /g, '');
+    }, [intent]);
 
-
-    if (!chartConfig) {
+    if (!data || data.length === 0 || type === 'none') {
         return null;
     }
 
+    const renderChart = () => {
+        switch (type) {
+            case 'bar':
+                return <BarChartView data={processedData} title={title} />;
+            case 'line':
+                // Line chart receives original data usually, but we pass processed for consistency if needed
+                // Logic above preserved original data for line
+                return <LineChartView data={processedData} title={title} />;
+            case 'pie':
+                return <PieChartView data={processedData} title={title} />;
+            default:
+                return null;
+        }
+    };
+
     return (
-        <Box sx={{ mt: 3, mb: 2, p: 2, border: '1px solid #eee', borderRadius: 2 }}>
-            {chartConfig.type === 'bar' && chartConfig.xAxisKey && chartConfig.dataKey && (
-                <BarChartView
-                    data={data}
-                    xAxisKey={chartConfig.xAxisKey}
-                    dataKey={chartConfig.dataKey}
-                    title={chartConfig.title}
-                    highlightLowStock={chartConfig.highlightLowStock}
-                />
-            )}
-            {chartConfig.type === 'line' && chartConfig.xAxisKey && chartConfig.dataKey && (
-                <LineChartView
-                    data={data}
-                    xAxisKey={chartConfig.xAxisKey}
-                    dataKey={chartConfig.dataKey}
-                    title={chartConfig.title}
-                />
-            )}
-            {chartConfig.type === 'pie' && chartConfig.nameKey && chartConfig.dataKey && (
-                <PieChartView
-                    data={data}
-                    nameKey={chartConfig.nameKey}
-                    dataKey={chartConfig.dataKey}
-                    title={chartConfig.title}
-                />
-            )}
-        </Box>
+        <Fade in={true} timeout={500}>
+            <Box sx={{ width: '100%', mt: 2 }}>
+                {data.length > 8 && type !== 'line' && (
+                    <Typography variant="caption" color="text.secondary" display="block" align="center" sx={{ mb: 1 }}>
+                        Showing top 8 results. remaining items grouped as "Others".
+                    </Typography>
+                )}
+                {renderChart()}
+            </Box>
+        </Fade>
     );
 };
