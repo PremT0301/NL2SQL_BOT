@@ -1,15 +1,55 @@
-import React from 'react';
-import { Box } from '@mui/material';
-import { Navbar } from '../components/Navbar';
+import React, { useState, useEffect, useCallback } from 'react';
+import { ChatLayout } from '../components/ChatLayout';
+import { ChatHistorySidebar } from '../components/ChatHistorySidebar';
 import { ChatWindow } from '../components/ChatWindow';
+import { getConversations, type ConversationSummary } from '../services/api';
 
 export const Chat: React.FC = () => {
+    const [conversations, setConversations] = useState<ConversationSummary[]>([]);
+    const [activeConversationId, setActiveConversationId] = useState<string | undefined>();
+    const [refreshTrigger, setRefreshTrigger] = useState(0);
+
+    const loadConversations = useCallback(async () => {
+        try {
+            const data = await getConversations();
+            setConversations(data);
+        } catch (error) {
+            console.error("Failed to load conversations", error);
+        }
+    }, []);
+
+    useEffect(() => {
+        loadConversations();
+    }, [loadConversations, refreshTrigger]);
+
+    const handleNewChat = () => {
+        setActiveConversationId(undefined);
+    };
+
+    const handleSelectConversation = (id: string) => {
+        setActiveConversationId(id);
+    };
+
+    const handleConversationUpdated = () => {
+        // Trigger a refresh of the conversation list (e.g., to see new title or time)
+        setRefreshTrigger(prev => prev + 1);
+    };
+
+    const sidebar = (
+        <ChatHistorySidebar
+            conversations={conversations}
+            activeConversationId={activeConversationId}
+            onSelectConversation={handleSelectConversation}
+            onNewChat={handleNewChat}
+        />
+    );
+
     return (
-        <Box sx={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
-            <Navbar />
-            <Box sx={{ flexGrow: 1, p: 2, bgcolor: 'background.default', overflow: 'hidden' }}>
-                <ChatWindow />
-            </Box>
-        </Box>
+        <ChatLayout sidebar={sidebar}>
+            <ChatWindow
+                conversationId={activeConversationId}
+                onConversationUpdated={handleConversationUpdated}
+            />
+        </ChatLayout>
     );
 };
