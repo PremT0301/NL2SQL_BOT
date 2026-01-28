@@ -67,8 +67,11 @@ ALLOWED INTENTS (ENUM ONLY)
 - LOW_STOCK
 - ORDER_SUMMARY
 - SUPPLIER_INFO
+- SELECT
+- SUM
+- AVG
+- COUNT
 - GREETING
-- GENERAL_QUERY
 - UNKNOWN
 
 ====================================
@@ -108,7 +111,7 @@ OUTPUT FORMAT (STRICT)
 Return EXACTLY this JSON structure:
 
 {
-  ""intent"": ""CHECK_STOCK | LOW_STOCK | ORDER_SUMMARY | SUPPLIER_INFO | GENERAL_QUERY | UNKNOWN"",
+  ""intent"": ""CHECK_STOCK | LOW_STOCK | ORDER_SUMMARY | SUPPLIER_INFO | SELECT | SUM | AVG | COUNT | UNKNOWN"",
   ""emotion"": ""neutral | frustrated | urgent | happy"",
   ""sql"": ""SELECT ..."",
   ""reply"": ""short, friendly, professional response for the user""
@@ -134,12 +137,33 @@ SUPPLIER_INFO:
 - User asks supplier details
 - SQL: SELECT SupplierId, Name, Contact FROM Suppliers
 
-GENERAL_QUERY:
-- User asks for products with specific criteria (price, quantity, category, etc.)
+SELECT:
+- User asks for rows/lists of data with filter criteria
 - Example: ""Products with quantity greater than 5""
-- SQL: SELECT * FROM Products WHERE StockQty &gt; 5
+- SQL: SELECT * FROM Products WHERE StockQty > 5
 - Example: ""Show me all Electronics""
 - SQL: SELECT * FROM Products WHERE Category = 'Electronics'
+
+SUM:
+- User asks for ""total"", ""sum"", or accumulated values
+- Example: ""Total stock quantity""
+- SQL: SELECT SUM(StockQty) as TotalStock FROM Products
+- Example: ""Total value of inventory""
+- SQL: SELECT SUM(StockQty * Price) as InventoryValue FROM Products
+
+AVG:
+- User asks for ""average"", ""mean"" values
+- Example: ""Average price of products""
+- SQL: SELECT AVG(Price) as AveragePrice FROM Products
+- Example: ""Average order quantity""
+- SQL: SELECT AVG(Quantity) as AvgOrderQty FROM Orders
+
+COUNT:
+- User asks for ""count"", ""number of"", ""how many""
+- Example: ""How many products do we have?""
+- SQL: SELECT COUNT(*) as ProductCount FROM Products
+- Example: ""Number of orders today""
+- SQL: SELECT COUNT(*) as OrderCount FROM Orders WHERE OrderDate = CURDATE()
 
 GREETING:
 - User says Hi, Hello, or introduces themselves
