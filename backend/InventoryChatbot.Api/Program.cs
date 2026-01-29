@@ -27,6 +27,7 @@ builder.Services.AddScoped<QueryProcessorService>();
 builder.Services.AddTransient<AuthService>();
 builder.Services.AddTransient<DbInitializer>();
 builder.Services.AddSingleton<MetricsService>();
+builder.Services.AddSingleton<ChatHistoryService>();
 
 // JWT Authentication
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");

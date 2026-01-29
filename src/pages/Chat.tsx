@@ -30,7 +30,10 @@ export const Chat: React.FC = () => {
         setActiveConversationId(id);
     };
 
-    const handleConversationUpdated = () => {
+    const handleConversationUpdated = (newId?: string) => {
+        if (newId) {
+            setActiveConversationId(newId);
+        }
         // Trigger a refresh of the conversation list (e.g., to see new title or time)
         setRefreshTrigger(prev => prev + 1);
     };

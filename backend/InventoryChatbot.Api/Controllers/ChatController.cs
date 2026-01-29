@@ -11,38 +11,27 @@ namespace InventoryChatbot.Api.Controllers
     public class ChatController : ControllerBase
     {
         private readonly QueryProcessorService _queryProcessor;
+        private readonly ChatHistoryService _chatHistory;
 
-        public ChatController(QueryProcessorService queryProcessor)
+        public ChatController(QueryProcessorService queryProcessor, ChatHistoryService chatHistory)
         {
             _queryProcessor = queryProcessor;
+            _chatHistory = chatHistory;
         }
 
         // GET: api/chat/conversations
         [HttpGet("conversations")]
         public IActionResult GetConversations()
         {
-            // TODO: In a real app, fetch from database based on User ID
-            // var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-            // Mock Data
-            var summaries = new[]
-            {
-                new { id = "1", title = "Inventory Status", lastMessageAt = DateTime.UtcNow.ToString("o") },
-                new { id = "2", title = "Supplier Check", lastMessageAt = DateTime.UtcNow.AddDays(-1).ToString("o") }
-            };
-            return Ok(summaries);
+            var conversations = _chatHistory.GetConversations();
+            return Ok(conversations);
         }
 
         // GET: api/chat/{id}
         [HttpGet("{id}")]
         public IActionResult GetConversation(string id)
         {
-            // Mock Data
-            var messages = new[]
-            {
-                new { sender = "user", text = "How many laptops do we have?", timestamp = DateTime.UtcNow.AddMinutes(-10).ToString("o") },
-                new { sender = "bot", text = "We have 45 laptops in stock.", timestamp = DateTime.UtcNow.AddMinutes(-9).ToString("o") }
-            };
+            var messages = _chatHistory.GetMessages(id);
             return Ok(messages);
         }
 
@@ -55,7 +44,36 @@ namespace InventoryChatbot.Api.Controllers
 
             try
             {
+                // 1. Determine Conversation ID or Create New
+                string? conversationId = request.ConversationId;
+                if (string.IsNullOrEmpty(conversationId))
+                {
+                    var newConvo = _chatHistory.CreateConversation("New Chat");
+                    conversationId = newConvo.Id;
+                }
+
+                // 2. Save User Message
+                _chatHistory.AddMessage(conversationId, new ChatMessage
+                {
+                    Sender = "user",
+                    Text = request.Message,
+                    Timestamp = DateTime.UtcNow.ToString("o")
+                });
+
+                // 3. Process with LLM
                 var result = await _queryProcessor.ProcessQueryAsync(request.Message);
+
+                // 4. Save Bot Message
+                _chatHistory.AddMessage(conversationId, new ChatMessage
+                {
+                    Sender = "bot",
+                    Text = result.Reply,
+                    Emotion = result.Emotion,
+                    Intent = result.Intent,
+                    Sql = result.Sql,
+                    Data = result.Data,
+                    Timestamp = DateTime.UtcNow.ToString("o")
+                });
 
                 return Ok(new
                 {
@@ -64,7 +82,7 @@ namespace InventoryChatbot.Api.Controllers
                     intent = result.Intent,
                     sql = result.Sql,
                     data = result.Data,
-                    conversationId = request.ConversationId ?? Guid.NewGuid().ToString() // Return same or new ID
+                    conversationId = conversationId
                 });
             }
             catch (Exception ex)

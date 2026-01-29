@@ -12,7 +12,7 @@ import { ChatInput } from './ChatInput';
 
 interface ChatWindowProps {
     conversationId?: string;
-    onConversationUpdated?: () => void; // Callback to refresh history list
+    onConversationUpdated?: (newId?: string) => void;
 }
 
 export const ChatWindow: React.FC<ChatWindowProps> = ({ conversationId, onConversationUpdated }) => {
@@ -72,11 +72,12 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ conversationId, onConver
             };
             setMessages((prev) => [...prev, botMsg]);
 
-            // If this was a new conversation (no ID initially), we might want to trigger a refresh
-            if (!conversationId && onConversationUpdated) {
-                onConversationUpdated();
-                // Note: Ideally the backend returns the new ID and we switch to it. 
-                // For now, we just refresh the list.
+            // If this was a new conversation, notify parent with new ID
+            if (!conversationId && response.conversationId && onConversationUpdated) {
+                onConversationUpdated(response.conversationId);
+            } else if (onConversationUpdated) {
+                // For existing conversation, just refresh history item (e.g. timestamp/summary)
+                onConversationUpdated(undefined);
             }
         } catch (error) {
             console.error(error);
