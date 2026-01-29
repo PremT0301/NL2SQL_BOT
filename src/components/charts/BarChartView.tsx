@@ -54,7 +54,7 @@ export const BarChartView: React.FC<BarChartViewProps> = ({ data, title, activeE
                     <XAxis
                         dataKey={xAxisKey}
                         stroke={theme.palette.text.secondary}
-                        tick={{ fontSize: 11 }}
+                        tick={false}
                         tickLine={false}
                         axisLine={{ stroke: '#e0e0e0' }}
                     />

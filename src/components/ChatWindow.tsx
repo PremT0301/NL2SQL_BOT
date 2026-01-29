@@ -66,6 +66,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ conversationId, onConver
                 text: response.reply,
                 emotion: response.emotion,
                 intent: response.intent,
+                sql: response.sql,
                 data: response.data,
                 timestamp: new Date().toISOString(),
             };

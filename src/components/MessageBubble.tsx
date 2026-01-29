@@ -73,6 +73,8 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
         emotionConfig = emotionStyles[message.emotion];
     }
 
+    const [showSql, setShowSql] = useState(false);
+
     return (
         <Box
             sx={{
@@ -122,6 +124,47 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
                     <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap' }}>
                         {message.text}
                     </Typography>
+
+                    {/* View SQL Option (Bot only, if SQL exists) */}
+                    {/* View SQL Option (Bot only, if SQL exists) */}
+                    {!isUser && (
+                        <Box sx={{ mt: 1 }}>
+                            {message.sql ? (
+                                <>
+                                    <Typography
+                                        variant="caption"
+                                        onClick={() => setShowSql(!showSql)}
+                                        sx={{
+                                            cursor: 'pointer',
+                                            color: 'primary.main',
+                                            textDecoration: 'underline',
+                                            '&:hover': { color: 'primary.dark' }
+                                        }}
+                                    >
+                                        {showSql ? 'Hide SQL Query' : 'View Generated SQL'}
+                                    </Typography>
+                                    {showSql && (
+                                        <Paper sx={{ p: 1.5, mt: 1, backgroundColor: '#f5f5f5', borderRadius: 1, border: '1px solid #ddd' }}>
+                                            <Typography variant="caption" component="pre" sx={{
+                                                fontFamily: 'monospace',
+                                                whiteSpace: 'pre-wrap',
+                                                wordBreak: 'break-all',
+                                                color: '#333',
+                                                fontSize: '0.75rem',
+                                                m: 0
+                                            }}>
+                                                {message.sql}
+                                            </Typography>
+                                        </Paper>
+                                    )}
+                                </>
+                            ) : message.intent && message.intent !== 'GREETING' && (
+                                <Typography variant="caption" color="text.secondary" sx={{ fontStyle: 'italic' }}>
+                                    (SQL not available for this response - Try restarting backend)
+                                </Typography>
+                            )}
+                        </Box>
+                    )}
 
                     {/* Data Table & Visualization (Bot only, if data exists) */}
                     {!isUser && message.data && message.data.length > 0 && (

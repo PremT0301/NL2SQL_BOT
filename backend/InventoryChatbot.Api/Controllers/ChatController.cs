@@ -62,6 +62,7 @@ namespace InventoryChatbot.Api.Controllers
                     reply = result.Reply,
                     emotion = result.Emotion,
                     intent = result.Intent,
+                    sql = result.Sql,
                     data = result.Data,
                     conversationId = request.ConversationId ?? Guid.NewGuid().ToString() // Return same or new ID
                 });

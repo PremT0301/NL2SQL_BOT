@@ -48,8 +48,8 @@ export const DataTable: React.FC<DataTableProps> = ({ data, activeElementId, onH
 
     return (
         <Box sx={{ width: '100%', mt: 2, mb: 2 }}>
-            <Paper sx={{ width: '100%', overflow: 'hidden', border: '1px solid #e0e0e0' }}>
-                <TableContainer sx={{ maxHeight: 440 }}>
+            <Paper sx={{ width: '100%', overflow: 'hidden', border: '1px solid #e0e0e0', display: 'flex', flexDirection: 'column' }}>
+                <TableContainer sx={{ maxHeight: 500, overflowX: 'auto' }}>
                     <Table stickyHeader aria-label="sticky table" size="small">
                         <TableHead>
                             <TableRow>

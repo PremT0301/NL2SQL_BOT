@@ -80,7 +80,7 @@ export const LineChartView: React.FC<LineChartViewProps> = ({ data, title, activ
                     <XAxis
                         dataKey={xAxisKey}
                         stroke={theme.palette.text.secondary}
-                        tick={{ fontSize: 11 }}
+                        tick={false}
                         tickLine={false}
                         axisLine={{ stroke: '#e0e0e0' }}
                     />

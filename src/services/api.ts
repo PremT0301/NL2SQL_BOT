@@ -48,6 +48,7 @@ export interface ChatMessage { // Re-exporting or defining here to ensure consis
     text: string;
     emotion?: 'neutral' | 'happy' | 'frustrated' | 'urgent';
     intent?: string;
+    sql?: string;
     data?: any[];
     timestamp: string;
 }
@@ -56,6 +57,7 @@ export interface QueryResponse {
     reply: string;
     emotion?: 'neutral' | 'happy' | 'frustrated' | 'urgent';
     intent?: string;
+    sql?: string;
     data?: any[];
     conversationId?: string; // Backend should return this if a new convo is created
 }

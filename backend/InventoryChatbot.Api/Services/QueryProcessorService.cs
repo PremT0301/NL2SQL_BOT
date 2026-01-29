@@ -141,6 +141,7 @@ public class QueryProcessorService
             Reply = llmResult.Reply,
             Emotion = llmResult.Emotion,
             Intent = llmResult.Intent,
+            Sql = safeSql,
             Data = data
         };
     }
