@@ -7,7 +7,10 @@ export interface Dataset {
     id: DatasetId;
     name: string;
     description: string;
-    icon: string; // Storing icon name or emoji for simplicity
+    icon: string;
+    themeColor: string;
+    pageTitle: string;
+    sampleQueries: string[];
 }
 
 export const DATASETS: Dataset[] = [
@@ -15,19 +18,43 @@ export const DATASETS: Dataset[] = [
         id: 'TechTuk',
         name: 'TechTuk',
         description: 'Technology Inventory Analytics',
-        icon: '💻'
+        icon: '💻',
+        themeColor: '#1976d2', // Blue
+        pageTitle: 'InventoryAI – TechTuk',
+        sampleQueries: [
+            "Show laptop stock",
+            "List low stock items",
+            "What is the average product price?",
+            "Show total inventory quantity"
+        ]
     },
     {
         id: 'Novotel',
         name: 'Novotel',
         description: 'Restaurant Operations & Sales Analytics',
-        icon: '🏨'
+        icon: '🏨',
+        themeColor: '#ed6c02', // Orange
+        pageTitle: 'Novotel Restaurant Analytics',
+        sampleQueries: [
+            "What is the most selling dish?",
+            "Show available desserts",
+            "Total orders today",
+            "List staff working evening shift"
+        ]
     },
     {
         id: 'PVRINOX',
         name: 'PVRINOX',
         description: 'Cinema Operations, Movies & Snacks Analytics',
-        icon: '🎬'
+        icon: '🎬',
+        themeColor: '#9c27b0', // Purple
+        pageTitle: 'PVRINOX Cinema Insights',
+        sampleQueries: [
+            "What is the highest watched movie?",
+            "Show movies playing today",
+            "List low stock snacks",
+            "How many tickets sold this week?"
+        ]
     }
 ];
 

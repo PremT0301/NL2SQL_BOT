@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { CssBaseline, ThemeProvider, createTheme } from '@mui/material';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './auth/AuthContext';
-import { DatasetProvider } from './context/DatasetContext';
+import { DatasetProvider, useDataset } from './context/DatasetContext';
 import ProtectedRoute from './auth/ProtectedRoute';
 
 // Pages
@@ -11,12 +11,11 @@ import { Login } from './pages/Login';
 import { Chat } from './pages/Chat';
 import { Admin } from './pages/Admin';
 
-// Professional enterprise-grade theme
-const theme = createTheme({
+const getTheme = (primaryColor: string) => createTheme({
   palette: {
     mode: 'light',
     primary: {
-      main: '#1976d2', // Enterprise Blue
+      main: primaryColor,
     },
     secondary: {
       main: '#2e7d32', // Success Green hint
@@ -47,35 +46,46 @@ const theme = createTheme({
   },
 });
 
-const App: React.FC = () => {
+const AppContent: React.FC = () => {
+  const { selectedDataset } = useDataset();
+  const themeColor = selectedDataset?.themeColor || '#1976d2'; // Default or Blue
+
+  const theme = useMemo(() => getTheme(themeColor), [themeColor]);
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <AuthProvider>
-        <DatasetProvider>
-          <BrowserRouter>
-            <Routes>
-              {/* Public Routes */}
-              <Route path="/" element={<Landing />} />
-              <Route path="/login" element={<Login />} />
+      <BrowserRouter>
+        <Routes>
+          {/* Public Routes */}
+          <Route path="/" element={<Landing />} />
+          <Route path="/login" element={<Login />} />
 
-              {/* Protected Routes: User & Admin */}
-              <Route element={<ProtectedRoute />}>
-                <Route path="/chat" element={<Chat />} />
-              </Route>
+          {/* Protected Routes: User & Admin */}
+          <Route element={<ProtectedRoute />}>
+            <Route path="/chat" element={<Chat />} />
+          </Route>
 
-              {/* Protected Routes: Admin Only */}
-              <Route element={<ProtectedRoute requiredRole="ADMIN" />}>
-                <Route path="/admin" element={<Admin />} />
-              </Route>
+          {/* Protected Routes: Admin Only */}
+          <Route element={<ProtectedRoute requiredRole="ADMIN" />}>
+            <Route path="/admin" element={<Admin />} />
+          </Route>
 
-              {/* Fallback */}
-              <Route path="*" element={<Navigate to="/" replace />} />
-            </Routes>
-          </BrowserRouter>
-        </DatasetProvider>
-      </AuthProvider>
+          {/* Fallback */}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </BrowserRouter>
     </ThemeProvider>
+  );
+};
+
+const App: React.FC = () => {
+  return (
+    <AuthProvider>
+      <DatasetProvider>
+        <AppContent />
+      </DatasetProvider>
+    </AuthProvider>
   );
 };
 

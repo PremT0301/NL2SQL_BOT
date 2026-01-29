@@ -13,8 +13,10 @@ export const Chat: React.FC = () => {
 
     const loadConversations = useCallback(async () => {
         try {
-            const data = await getConversations();
-            setConversations(data);
+            if (selectedDataset?.id) {
+                const data = await getConversations(selectedDataset.id);
+                setConversations(data);
+            }
         } catch (error) {
             console.error("Failed to load conversations", error);
         }
@@ -24,7 +26,7 @@ export const Chat: React.FC = () => {
 
     useEffect(() => {
         loadConversations();
-    }, [loadConversations, refreshTrigger]);
+    }, [loadConversations, refreshTrigger, selectedDataset]);
 
     const handleNewChat = () => {
         setActiveConversationId(undefined);

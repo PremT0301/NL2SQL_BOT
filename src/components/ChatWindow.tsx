@@ -103,7 +103,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ conversationId, onConver
         }
     };
 
-    const suggestedQueries = [
+    const suggestedQueries = selectedDataset?.sampleQueries || [
         "Show all products with low stock",
         "Who are the top suppliers?",
         "List orders from last week",

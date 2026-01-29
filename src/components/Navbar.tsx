@@ -64,7 +64,7 @@ export const Navbar: React.FC = () => {
                         }}
                         onClick={() => navigate(isAuthenticated ? (isAdmin ? '/admin' : '/chat') : '/')}
                     >
-                        InventoryAI
+                        {selectedDataset ? selectedDataset.pageTitle : 'InventoryAI'}
                     </Typography>
                     {selectedDataset && (
                         <Chip

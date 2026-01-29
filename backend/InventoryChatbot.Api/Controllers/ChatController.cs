@@ -39,6 +39,8 @@ namespace InventoryChatbot.Api.Controllers
         [HttpPost("message")]
         public async Task<IActionResult> SendMessage([FromBody] ChatMessageRequest request)
         {
+            Console.WriteLine($"DEBUG: Received Message Request. MsgLen={request.Message?.Length}, ConvoId={request.ConversationId}, DatasetId={request.DatasetId}");
+
             if (string.IsNullOrWhiteSpace(request.Message))
                 return BadRequest("Message cannot be empty");
 
@@ -94,8 +96,13 @@ namespace InventoryChatbot.Api.Controllers
 
     public class ChatMessageRequest
     {
+        [System.Text.Json.Serialization.JsonPropertyName("message")]
         public string Message { get; set; } = string.Empty;
+
+        [System.Text.Json.Serialization.JsonPropertyName("conversationId")]
         public string? ConversationId { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("datasetId")]
         public string? DatasetId { get; set; }
     }
 }

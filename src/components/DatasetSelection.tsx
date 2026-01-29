@@ -45,7 +45,11 @@ export const DatasetSelection: React.FC = () => {
                                     borderColor: 'divider'
                                 }}>
                                     <CardActionArea
-                                        onClick={() => selectDataset(dataset.id as DatasetId)}
+                                        onClick={() => {
+                                            // 1. Select dataset
+                                            // 2. Clear history view (handled in Chat.tsx or by navigation)
+                                            selectDataset(dataset.id as DatasetId);
+                                        }}
                                         sx={{ height: '100%', p: 2 }}
                                     >
                                         <CardContent sx={{

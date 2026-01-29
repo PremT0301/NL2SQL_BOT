@@ -60,6 +60,7 @@ public class QueryProcessorService
             || llmResult.Sql.Trim().ToUpper() == "NO_SQL"
             || llmResult.Intent == "GREETING"
             || llmResult.Intent == "MODIFICATION"
+            || llmResult.Intent == "UNKNOWN"
             || llmResult.Sql.Trim() == "SELECT ..."
             || llmResult.Sql.Trim() == "SELECT")
         {

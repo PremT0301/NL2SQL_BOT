@@ -263,16 +263,16 @@ Convert natural language queries into SAFE, READ-ONLY SQL.
 DATABASE SCHEMA (Restaurant)
 ====================================
 
-FoodItems(FoodId, Name, Category, Price, Availability)
-Orders(OrderId, FoodId, Quantity, OrderDate)
-SalesSummary(FoodId, TotalSold)
-Staff(StaffId, Name, Role, Shift)
+novotel_db.FoodItems(FoodId, Name, Category, Price, Availability)
+novotel_db.Orders(OrderId, FoodId, Quantity, OrderDate)
+novotel_db.SalesSummary(FoodId, TotalSold)
+novotel_db.Staff(StaffId, Name, Role, Shift)
 
 ====================================
 INTENT MAPPING
 ====================================
 
-- ""best selling"", ""top food"" → MOST_SELLING (Query SalesSummary)
+- ""best selling"", ""top food"" → MOST_SELLING (Query novotel_db.SalesSummary)
 - ""average price"" → AVERAGE_PRICE
 - ""available"", ""menu"" → AVAILABILITY
 - ""staff"", ""who is working"" → STAFF_INFO
@@ -283,7 +283,7 @@ SQL RULES
 ====================================
 
 - ONLY SELECT statements
-- FoodItems.Availability is boolean (1=Available, 0=Unavailable) or string 'Yes'/'No' (assume text for safety: 'Yes', 'No')
+- novotel_db.FoodItems.Availability is boolean (1=Available, 0=Unavailable) or string 'Yes'/'No' (assume text for safety: 'Yes', 'No')
 - Use LIKE for partial food names
 
 ====================================
@@ -308,19 +308,19 @@ Convert natural language queries into SAFE, READ-ONLY SQL.
 DATABASE SCHEMA (Cinema)
 ====================================
 
-Movies(MovieId, Name, Genre, Rating)
-Shows(ShowId, MovieId, ShowTime, TicketsSold)
-Snacks(SnackId, Name, Price, StockQty)
-SalesSummary(MovieId, TotalTicketsSold)
-Staff(StaffId, Name, Role)
+pvrinox_db.Movies(MovieId, Name, Genre, Rating)
+pvrinox_db.Shows(ShowId, MovieId, ShowTime, TicketsSold)
+pvrinox_db.Snacks(SnackId, Name, Price, StockQty)
+pvrinox_db.SalesSummary(MovieId, TotalTicketsSold)
+pvrinox_db.Staff(StaffId, Name, Role)
 
 ====================================
 INTENT MAPPING
 ====================================
 
-- ""best movie"", ""top rated"" → MOST_WATCHED (Query SalesSummary or Rating)
+- ""best movie"", ""top rated"" → MOST_WATCHED (Query pvrinox_db.SalesSummary or Rating)
 - ""schedule"", ""times"" → SHOW_SCHEDULE
-- ""snacks"", ""popcorn"" → LOW_STOCK (Check Snacks table)
+- ""snacks"", ""popcorn"" → LOW_STOCK (Check pvrinox_db.Snacks)
 - ""sales"" → SALES_SUMMARY
 
 ====================================

@@ -62,14 +62,14 @@ export interface QueryResponse {
     conversationId?: string; // Backend should return this if a new convo is created
 }
 
-export const getConversations = async (): Promise<ConversationSummary[]> => {
-    // In a real app: const response = await api.get<ConversationSummary[]>('/chat/conversations');
-    // For now, if 404, we might fail, but let's assume the backend exists or we handle errors in UI.
+export const getConversations = async (datasetId?: string): Promise<ConversationSummary[]> => {
     try {
-        const response = await api.get<ConversationSummary[]>('/chat/conversations');
+        const url = datasetId
+            ? `/chat/conversations?dataset=${encodeURIComponent(datasetId)}`
+            : '/chat/conversations';
+        const response = await api.get<ConversationSummary[]>(url);
         return response.data;
     } catch (e) {
-        // Fallback for demo if backend isn't ready
         console.warn("API /chat/conversations failed, returning empty list", e);
         return [];
     }
@@ -86,11 +86,8 @@ export const getConversationMessages = async (conversationId: string): Promise<C
 };
 
 export const sendMessage = async (message: string, dataset: string, conversationId?: string): Promise<QueryResponse> => {
-    const payload = { message, dataset, conversationId };
+    const payload = { message, datasetId: dataset, conversationId }; // Key must match Backend DTO (DatasetId)
     const response = await api.post<QueryResponse>('/chat/message', payload);
-    // If the original endpoint was /query, we might need to adjust or keep backward compatibility.
-    // The instructions said "POST /api/chat/message", so we switch to that.
-    // If that fails, we can fallback to /query for the existing bot.
     return response.data;
 };
 
