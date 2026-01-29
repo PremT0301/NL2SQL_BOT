@@ -17,12 +17,7 @@ export const CustomTooltip: React.FC<CustomTooltipProps> = ({ active, payload, l
     const data = payload[0].payload;
     const value = payload[0].value;
 
-    // Determine keys for display
-    // We expect data to potentially have 'product', 'category', 'quantity' etc.
-    // But since keys are dynamic from SQL, we try to infer or just dump meaningful KV pairs.
-    // However, the rule says: Product, Category, Quantity.
-
-    // "Others" case
+    // Handle "Others" case specifically
     if (label === 'Others' || data.name === 'Others') {
         return (
             <Paper
@@ -45,18 +40,22 @@ export const CustomTooltip: React.FC<CustomTooltipProps> = ({ active, payload, l
         );
     }
 
-    // Attempt to find Product/Category/Quantity fields safely
-    // Common keys might be 'product_name', 'Product', 'category', 'Category', 'quantity', 'stock', 'count'
-    const keys = Object.keys(data);
-
+    // Helper to find value by fuzzy matching keys, strictly ignoring IDs
     const findValue = (searchTerms: string[]) => {
-        const key = keys.find(k => searchTerms.some(term => k.toLowerCase().includes(term)));
-        return key ? data[key] : null;
+        const keys = Object.keys(data);
+        const match = keys.find(k => {
+            const lowerK = k.toLowerCase();
+            // CRITICAL: Ignore any key containing "id" (e.g. productId, key_id)
+            if (lowerK.includes('id')) return false;
+            return searchTerms.some(term => lowerK.includes(term));
+        });
+        return match ? data[match] : null;
     };
 
+    // Strict Field Mapping
     const productName = findValue(['product', 'name', 'item']) || label;
     const category = findValue(['category', 'type', 'group']);
-    const quantity = value; // logic usually puts the main metric in 'value' in recharts payload
+    const quantity = value;
 
     return (
         <Paper
@@ -69,12 +68,14 @@ export const CustomTooltip: React.FC<CustomTooltipProps> = ({ active, payload, l
                 minWidth: 180
             }}
         >
+            {/* Product Name (Title) */}
             <Box sx={{ mb: 1 }}>
                 <Typography variant="subtitle2" sx={{ fontWeight: 700, color: theme.palette.primary.main }}>
                     {productName}
                 </Typography>
             </Box>
 
+            {/* Category */}
             {category && (
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5, gap: 2 }}>
                     <Typography variant="caption" color="text.secondary">
@@ -86,17 +87,17 @@ export const CustomTooltip: React.FC<CustomTooltipProps> = ({ active, payload, l
                 </Box>
             )}
 
+            {/* Quantity */}
             <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 2 }}>
                 <Typography variant="caption" color="text.secondary">
                     Quantity:
                 </Typography>
                 <Typography variant="body2" fontWeight={600}>
-                    {quantity}
-                    {typeof quantity === 'number' ? ' units' : ''}
+                    {quantity} {typeof quantity === 'number' ? 'units' : ''}
                 </Typography>
             </Box>
 
-            {/* For Pie charts w/ percentages, we might need extra handling if passed in payload */}
+            {/* Pie Chart Percentage (Optional) */}
             {payload[0].payload.percent !== undefined && (
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 2, mt: 0.5 }}>
                     <Typography variant="caption" color="text.secondary">
