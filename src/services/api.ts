@@ -85,8 +85,8 @@ export const getConversationMessages = async (conversationId: string): Promise<C
     }
 };
 
-export const sendMessage = async (message: string, conversationId?: string): Promise<QueryResponse> => {
-    const payload = { message, conversationId };
+export const sendMessage = async (message: string, dataset: string, conversationId?: string): Promise<QueryResponse> => {
+    const payload = { message, dataset, conversationId };
     const response = await api.post<QueryResponse>('/chat/message', payload);
     // If the original endpoint was /query, we might need to adjust or keep backward compatibility.
     // The instructions said "POST /api/chat/message", so we switch to that.

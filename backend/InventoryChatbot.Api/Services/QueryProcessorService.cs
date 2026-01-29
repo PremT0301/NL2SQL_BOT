@@ -25,7 +25,7 @@ public class QueryProcessorService
         _logger = logger;
     }
 
-    public async Task<QueryResponse> ProcessQueryAsync(string userMessage)
+    public async Task<QueryResponse> ProcessQueryAsync(string userMessage, string? datasetId = null)
     {
         _metrics.Increment("total_requests");
         var startTime = DateTime.UtcNow;
@@ -35,13 +35,13 @@ public class QueryProcessorService
         var llmStart = DateTime.UtcNow;
         try
         {
-            llmResult = await _llmService.GenerateSqlAsync(userMessage);
+            llmResult = await _llmService.GenerateSqlAsync(userMessage, datasetId);
             var llmLatency = (DateTime.UtcNow - llmStart).TotalMilliseconds;
 
             _metrics.RecordLatency("llm_latency", llmLatency);
             Console.WriteLine($"DEBUG: LLM Generated SQL: {llmResult.Sql}");
-            _logger.LogInformation("LLM Decision: Intent={Intent}, Emotion={Emotion}, Latency={Latency}ms",
-                llmResult.Intent, llmResult.Emotion, llmLatency);
+            _logger.LogInformation("LLM Decision: Intent={Intent}, Emotion={Emotion}, Latency={Latency}ms, Dataset={Dataset}",
+                llmResult.Intent, llmResult.Emotion, llmLatency, datasetId);
         }
         catch (Exception ex)
         {

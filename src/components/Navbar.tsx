@@ -1,11 +1,13 @@
 import React from 'react';
-import { AppBar, Toolbar, Typography, Button, Box, useTheme, useMediaQuery, IconButton, Menu, MenuItem } from '@mui/material';
+import { AppBar, Toolbar, Typography, Button, Box, useTheme, useMediaQuery, IconButton, Menu, MenuItem, Chip } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
-import { ChatBubbleOutline, AdminPanelSettings, Logout, Login, Menu as MenuIcon } from '@mui/icons-material';
+import { useDataset } from '../context/DatasetContext';
+import { ChatBubbleOutline, AdminPanelSettings, Logout, Login, Menu as MenuIcon, SwapHoriz } from '@mui/icons-material';
 
 export const Navbar: React.FC = () => {
     const { isAuthenticated, isAdmin, logout } = useAuth();
+    const { selectedDataset, clearDataset } = useDataset();
     const navigate = useNavigate();
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -25,6 +27,14 @@ export const Navbar: React.FC = () => {
         navigate('/login');
     };
 
+    const handleSwitchDataset = () => {
+        handleClose();
+        clearDataset();
+        // Since Chat page checks for selectedDataset, it will automatically show the selection screen
+        // But we should ensure we are on the chat page or navigating to it
+        navigate('/chat');
+    };
+
     const handleNavigate = (path: string) => {
         handleClose();
         navigate(path);
@@ -39,21 +49,34 @@ export const Navbar: React.FC = () => {
             borderColor: 'divider',
         }}>
             <Toolbar sx={{ justifyContent: 'space-between' }}>
-                <Typography
-                    variant="h5"
-                    component="div"
-                    sx={{
-                        cursor: 'pointer',
-                        fontWeight: 700,
-                        color: 'primary.main',
-                        display: 'flex',
-                        alignItems: 'center',
-                        letterSpacing: '-0.5px'
-                    }}
-                    onClick={() => navigate(isAuthenticated ? (isAdmin ? '/admin' : '/chat') : '/')}
-                >
-                    InventoryAI
-                </Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    <Typography
+                        variant="h5"
+                        component="div"
+                        sx={{
+                            cursor: 'pointer',
+                            fontWeight: 700,
+                            color: 'primary.main',
+                            display: 'flex',
+                            alignItems: 'center',
+                            letterSpacing: '-0.5px',
+                            mr: 2
+                        }}
+                        onClick={() => navigate(isAuthenticated ? (isAdmin ? '/admin' : '/chat') : '/')}
+                    >
+                        InventoryAI
+                    </Typography>
+                    {selectedDataset && (
+                        <Chip
+                            icon={<span style={{ fontSize: '1.2em', marginLeft: '4px' }}>{selectedDataset.icon}</span>}
+                            label={selectedDataset.name}
+                            variant="outlined"
+                            color="primary"
+                            size="small"
+                            sx={{ display: { xs: 'none', md: 'flex' } }}
+                        />
+                    )}
+                </Box>
 
                 {isMobile ? (
                     <>
@@ -90,6 +113,11 @@ export const Navbar: React.FC = () => {
                                     <MenuItem key="chat" onClick={() => handleNavigate('/chat')}>
                                         <ChatBubbleOutline sx={{ mr: 1 }} /> Chat
                                     </MenuItem>,
+                                    selectedDataset && (
+                                        <MenuItem key="switch" onClick={handleSwitchDataset}>
+                                            <SwapHoriz sx={{ mr: 1 }} /> Switch Dataset
+                                        </MenuItem>
+                                    ),
                                     isAdmin && (
                                         <MenuItem key="admin" onClick={() => handleNavigate('/admin')}>
                                             <AdminPanelSettings sx={{ mr: 1 }} /> Admin
@@ -116,6 +144,16 @@ export const Navbar: React.FC = () => {
                             </Button>
                         ) : (
                             <>
+                                {selectedDataset && (
+                                    <Button
+                                        color="inherit"
+                                        startIcon={<SwapHoriz />}
+                                        onClick={handleSwitchDataset}
+                                        sx={{ '&:hover': { bgcolor: 'action.hover' } }}
+                                    >
+                                        Switch
+                                    </Button>
+                                )}
                                 <Button
                                     color="inherit"
                                     startIcon={<ChatBubbleOutline />}

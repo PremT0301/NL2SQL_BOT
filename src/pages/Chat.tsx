@@ -3,6 +3,8 @@ import { ChatLayout } from '../components/ChatLayout';
 import { ChatHistorySidebar } from '../components/ChatHistorySidebar';
 import { ChatWindow } from '../components/ChatWindow';
 import { getConversations, type ConversationSummary } from '../services/api';
+import { useDataset } from '../context/DatasetContext';
+import { DatasetSelection } from '../components/DatasetSelection';
 
 export const Chat: React.FC = () => {
     const [conversations, setConversations] = useState<ConversationSummary[]>([]);
@@ -17,6 +19,8 @@ export const Chat: React.FC = () => {
             console.error("Failed to load conversations", error);
         }
     }, []);
+
+    const { selectedDataset } = useDataset();
 
     useEffect(() => {
         loadConversations();
@@ -37,6 +41,10 @@ export const Chat: React.FC = () => {
         // Trigger a refresh of the conversation list (e.g., to see new title or time)
         setRefreshTrigger(prev => prev + 1);
     };
+
+    if (!selectedDataset) {
+        return <DatasetSelection />;
+    }
 
     const sidebar = (
         <ChatHistorySidebar

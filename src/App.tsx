@@ -2,6 +2,7 @@ import React from 'react';
 import { CssBaseline, ThemeProvider, createTheme } from '@mui/material';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './auth/AuthContext';
+import { DatasetProvider } from './context/DatasetContext';
 import ProtectedRoute from './auth/ProtectedRoute';
 
 // Pages
@@ -51,26 +52,28 @@ const App: React.FC = () => {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <AuthProvider>
-        <BrowserRouter>
-          <Routes>
-            {/* Public Routes */}
-            <Route path="/" element={<Landing />} />
-            <Route path="/login" element={<Login />} />
+        <DatasetProvider>
+          <BrowserRouter>
+            <Routes>
+              {/* Public Routes */}
+              <Route path="/" element={<Landing />} />
+              <Route path="/login" element={<Login />} />
 
-            {/* Protected Routes: User & Admin */}
-            <Route element={<ProtectedRoute />}>
-              <Route path="/chat" element={<Chat />} />
-            </Route>
+              {/* Protected Routes: User & Admin */}
+              <Route element={<ProtectedRoute />}>
+                <Route path="/chat" element={<Chat />} />
+              </Route>
 
-            {/* Protected Routes: Admin Only */}
-            <Route element={<ProtectedRoute requiredRole="ADMIN" />}>
-              <Route path="/admin" element={<Admin />} />
-            </Route>
+              {/* Protected Routes: Admin Only */}
+              <Route element={<ProtectedRoute requiredRole="ADMIN" />}>
+                <Route path="/admin" element={<Admin />} />
+              </Route>
 
-            {/* Fallback */}
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </BrowserRouter>
+              {/* Fallback */}
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </BrowserRouter>
+        </DatasetProvider>
       </AuthProvider>
     </ThemeProvider>
   );

@@ -61,7 +61,7 @@ namespace InventoryChatbot.Api.Controllers
                 });
 
                 // 3. Process with LLM
-                var result = await _queryProcessor.ProcessQueryAsync(request.Message);
+                var result = await _queryProcessor.ProcessQueryAsync(request.Message, request.DatasetId);
 
                 // 4. Save Bot Message
                 _chatHistory.AddMessage(conversationId, new ChatMessage
@@ -96,5 +96,6 @@ namespace InventoryChatbot.Api.Controllers
     {
         public string Message { get; set; } = string.Empty;
         public string? ConversationId { get; set; }
+        public string? DatasetId { get; set; }
     }
 }

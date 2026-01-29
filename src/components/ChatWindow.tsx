@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Box, Typography, CircularProgress, Chip, Stack } from '@mui/material';
 import type { ChatMessage } from '../services/api';
+import { useDataset } from '../context/DatasetContext';
 // Note: Changed import from '../models/ChatMessage' to '../services/api' 
 // assuming we want to use the consistency from api.ts, or strictly use models.
 // If models/ChatMessage exists, we should align them. 
@@ -17,48 +18,57 @@ interface ChatWindowProps {
 
 export const ChatWindow: React.FC<ChatWindowProps> = ({ conversationId, onConversationUpdated }) => {
     const [messages, setMessages] = useState<ChatMessage[]>([]);
-    const [loading, setLoading] = useState(false);
-    const [initialLoading, setInitialLoading] = useState(false);
-    const messagesEndRef = useRef<HTMLDivElement>(null);
+    const [isLoading, setIsLoading] = useState(false); // Renamed from loading
+    const messagesEndRef = useRef<null | HTMLDivElement>(null); // Updated type
+    const { selectedDataset } = useDataset(); // Added from context
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     };
-
-    // Load messages when conversationId changes
-    useEffect(() => {
-        if (conversationId) {
-            setInitialLoading(true);
-            getConversationMessages(conversationId)
-                .then(msgs => {
-                    setMessages(msgs);
-                    setTimeout(scrollToBottom, 100);
-                })
-                .catch(err => console.error("Failed to load messages", err))
-                .finally(() => setInitialLoading(false));
-        } else {
-            setMessages([]);
-        }
-    }, [conversationId]);
 
     // Scroll on new messages
     useEffect(() => {
         scrollToBottom();
     }, [messages]);
 
-    const handleSend = async (text: string) => {
+    // Load messages when conversationId changes
+    useEffect(() => {
+        if (conversationId) {
+            loadMessages(conversationId);
+        } else {
+            setMessages([]);
+        }
+    }, [conversationId]);
+
+    const loadMessages = async (id: string) => {
+        setIsLoading(true);
+        try {
+            const history = await getConversationMessages(id);
+            setMessages(history);
+            setTimeout(scrollToBottom, 100); // Ensure scroll after messages are rendered
+        } catch (error) {
+            console.error("Failed to load messages", error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleSend = async (message: string) => { // Renamed text to message
+        if (!message.trim() || !selectedDataset) return; // Guard against no dataset
+
         // 1. Add User Message immediately
         const userMsg: ChatMessage = {
             sender: 'user',
-            text: text,
+            text: message,
             timestamp: new Date().toISOString(),
         };
         setMessages((prev) => [...prev, userMsg]);
-        setLoading(true);
+        setIsLoading(true); // Renamed from setLoading
 
         try {
             // 2. Call API
-            const response = await sendMessage(text, conversationId);
+            // Updated sendMessage call to include selectedDataset.id
+            const response = await sendMessage(message, selectedDataset.id, conversationId);
 
             // 3. Add Bot Message
             const botMsg: ChatMessage = {
@@ -73,23 +83,23 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ conversationId, onConver
             setMessages((prev) => [...prev, botMsg]);
 
             // If this was a new conversation, notify parent with new ID
-            if (!conversationId && response.conversationId && onConversationUpdated) {
-                onConversationUpdated(response.conversationId);
+            if (response.conversationId && response.conversationId !== conversationId) {
+                onConversationUpdated?.(response.conversationId); // Use optional chaining
             } else if (onConversationUpdated) {
                 // For existing conversation, just refresh history item (e.g. timestamp/summary)
-                onConversationUpdated(undefined);
+                onConversationUpdated(undefined); // Trigger refresh
             }
         } catch (error) {
-            console.error(error);
+            console.error("Failed to send message", error); // Updated error message
             const errorMsg: ChatMessage = {
                 sender: 'bot',
-                text: "Sorry, I'm having trouble connecting to the server.",
+                text: "Sorry, I encountered an error processing your request.", // Updated error message
                 emotion: 'frustrated',
                 timestamp: new Date().toISOString(),
             };
             setMessages((prev) => [...prev, errorMsg]);
         } finally {
-            setLoading(false);
+            setIsLoading(false); // Renamed from setLoading
         }
     };
 
@@ -100,7 +110,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ conversationId, onConver
         "Show me product category distribution"
     ];
 
-    if (initialLoading) {
+    if (isLoading && messages.length === 0) { // Used isLoading for initial load state check roughly
         return (
             <Box sx={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <CircularProgress />
@@ -168,7 +178,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ conversationId, onConver
                 zIndex: 10
             }}>
                 <Box sx={{ maxWidth: '1000px', mx: 'auto' }}>
-                    <ChatInput onSend={handleSend} isLoading={loading} />
+                    <ChatInput onSend={handleSend} isLoading={isLoading} />
                     <Typography variant="caption" sx={{ display: 'block', textAlign: 'center', mt: 1, color: 'text.secondary' }}>
                         AI can make mistakes. Verify important results.
                     </Typography>
